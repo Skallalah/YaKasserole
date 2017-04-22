@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YaKasserole</title>
+  <script type="text/javascript" src="/jquery/jquery.min.js"></script>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.css">
+
+  <style>
+  .thumbnail {
+    position: relative;
+  }
+
+  .thumbnail:hover {
+
+  }
+
+  .caption {
+    position: absolute;
+    top: 45%;
+    left: 0;
+    width: 100%;
+  }
+
+  img {
+    box-shadow: 0px 2px 6px 2px rgba(0,0,0,0.75);
+    margin-bottom:20px;
+    opacity: 1;
+    display: block;
+    transition: .5s ease;
+    backface-visibility: hidden;
+  }
+
+  img:hover {
+    opacity: 0.3;
+  }
+
+  .text {
+  color: white;
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+  </style>
+
+</head>
+
+<body>
+  <div class="container">
+    <div>
+      <div>
+        <nav class="navbar navbar-inverse" role="navigation" style="padding-left:130px;">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
+            <li><a href="#">About us</a></li>
+            <li><a href="#">Contact us</a></li>
+          </ul>
+        </nav>
+      </div>
+      <br/>
+      <div class="jumbotron"> <p>
+        This is place to put content. You can put slider, short description about your website and place some links for navigation.
+      </p></div>
+    </div>
+
+
+    <div class="row">
+      <div id="first" class="col-xs-6 col-md-3 image">
+        <img class="img-responsive" src="http://2.bp.blogspot.com/-H6MAoWN-UIE/TuRwLbHRSWI/AAAAAAAABBk/89iiEulVsyg/s400/Free%2BNature%2BPhoto.jpg" alt="first"/>
+        <div class="overlay">
+          <div class="text">Hello World</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="http://www.virginia.org/uploadedImages/virginiaorg/Images/OrgImages/H/HamptonConventionVisitorBureau/Grandview_Nature_Preserve.jpg?width=300&height=200&scale=upscalecanvas" /></div>
+      <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="http://blog.arborday.org/wp-content/uploads/2013/02/NEC1-300x200.jpg" /></div>
+      <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="http://th03.deviantart.net/fs70/200H/f/2010/256/0/9/painting_of_nature_by_dhikagraph-d2ynalq.jpg" /></div>
+      <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="http://www.virginia.org/uploadedImages/virginiaorg/Images/OrgImages/H/HamptonConventionVisitorBureau/Grandview_Nature_Preserve.jpg?width=300&height=200&scale=upscalecanvas" /></div>
+      <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="http://th03.deviantart.net/fs70/200H/f/2010/256/0/9/painting_of_nature_by_dhikagraph-d2ynalq.jpg" /></div>
+      <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="http://2.bp.blogspot.com/-H6MAoWN-UIE/TuRwLbHRSWI/AAAAAAAABBk/89iiEulVsyg/s400/Free%2BNature%2BPhoto.jpg" /></div>
+      <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="http://blog.arborday.org/wp-content/uploads/2013/02/NEC1-300x200.jpg" /></div>
+    </div>
+
+
+    <button type="button" class="btn btn-primary" onclick="hideThings()">Primary</button>
+  </div>
+
+  <script>
+  function hideThings() {
+    $('#first').toggleClass('hidden');
+  }
+  </script>
+
+</body>
+
+
+
+</html>
