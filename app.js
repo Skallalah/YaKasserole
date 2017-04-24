@@ -23,10 +23,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname + '/ressources'));
 
 app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/'));
 app.use('/bootstrapJS', express.static(__dirname + '/node_modules/bootstrap/js'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
+
+// Favicon utilisée
+app.use(favicon(path.join(__dirname,'ressources', 'logo_fav.ico')));
 
 app.use('/', index);
 app.use('/users', users);
@@ -52,5 +56,7 @@ app.use(function(err, req, res, next) {
 var server = app.listen(8080, function() {
   console.log("Listening on port %s...", server.address().port);
 });
+
+//require('./public/sql')(pg);
 
 module.exports = app;

@@ -1,0 +1,83 @@
+.btn-primary {
+	border-radius: 0px;
+	border-color: transparent;
+  background-color: #464858 !important;
+  color: #fff !important;
+}
+
+.navbar {
+	  height: 50px;
+    background-color: #464858;
+    z-index: 9999;
+    border: 0;
+    font-size: 14px !important;
+    letter-spacing: 0.5px;
+    border-radius: 0;
+}
+
+.navbar li a, .navbar .navbar-brand {
+    color: #fff !important;
+}
+
+.navbar-nav li a:hover, .navbar-nav li.active a {
+    color: #ffffff !important;
+    background-color: #2d2f38 !important;
+}
+
+.navbar-default .navbar-toggle {
+    color: #fff !important;
+}
+
+.slideanim {visibility:hidden;}
+.slideAni {
+    /* The name of the animation */
+    animation-name: slide;
+    -webkit-animation-name: slide;
+    /* The duration of the animation */
+    animation-duration: 1s;
+    -webkit-animation-duration: 1s;
+    /* Make the element visible */
+    visibility: visible;
+}
+
+/* Go from 0% to 100% opacity (see-through) and specify the percentage from when to slide in the element along the Y-axis */
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: translateY(70%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+}
+@-webkit-keyframes slide {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(70%);
+    }
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0%);
+    }
+}
+
+.input[type=text] {
+    width: 130px;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+}
+
+/* When the input field gets focus, change its width to 100% */
+input[type=text]:focus {
+    width: 100%;
+}
+
+.container-main{
+	padding-left: 50px;
+	padding-right: 50px;
+}
+
+.row-10 {
+	padding-top: 10px;
+}

@@ -1,0 +1,134 @@
+<% include layout.html %>
+<link rel="stylesheet" type="text/css" href="/css/recette.css">
+</head>
+<body>
+
+  <nav class="navbar navbar-inverse navbar-static-top navbar-fixed-top">
+    <a href="#" class="pull-left" id="menu-toggle"><img src="/logo.png" width="60" height="50"></a>
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">Yakasserole</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a href="/recettes">Recettes</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Ateliers</a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#"><span class="glyphicon glyphicon-user"></span> Nous rejoindre</a></li>
+          <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Se connecter</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div id="wrapper">
+    <div id="sidebar-wrapper">
+      <ul class="sidebar-nav">
+        <img src="/personne.jpg" class="img-responsive img-circle center-block" width="130" height="130">
+        <h2 class="text-center"> Lucien Daignault </h2>
+        <hr class="featurette-divider">
+        <li>
+          <a href="#">Mes recettes</a>
+        </li>
+        <li>
+          <a href="#">Mon ateliers</a>
+        </li>
+        <li>
+          <a href="#">Mon profil</a>
+        </li>
+        <li>
+          <a href="#">Se déconnecter</a>
+        </li>
+      </ul>
+    </div>
+    <div id="page-content-wrapper" style="padding: 20px">
+      <div class="container-fluid container-main">
+        <div class="row">
+          <h1> Recherche </h1>
+        </div>
+        <div class="row row-10">
+          <div class="col">
+
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search">
+              <div class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                  <i class="glyphicon glyphicon-search"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="row row-10">
+          <div id="first" class="col-xs-6 col-md-3 image">
+            <img class="img-responsive img-shadowed" src="http://2.bp.blogspot.com/-H6MAoWN-UIE/TuRwLbHRSWI/AAAAAAAABBk/89iiEulVsyg/s400/Free%2BNature%2BPhoto.jpg" alt="first"/>
+            <div class="overlay">
+              <div class="text">Hello World</div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://www.virginia.org/uploadedImages/virginiaorg/Images/OrgImages/H/HamptonConventionVisitorBureau/Grandview_Nature_Preserve.jpg?width=300&height=200&scale=upscalecanvas" /></div>
+          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://blog.arborday.org/wp-content/uploads/2013/02/NEC1-300x200.jpg" /></div>
+          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://th03.deviantart.net/fs70/200H/f/2010/256/0/9/painting_of_nature_by_dhikagraph-d2ynalq.jpg" /></div>
+          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://www.virginia.org/uploadedImages/virginiaorg/Images/OrgImages/H/HamptonConventionVisitorBureau/Grandview_Nature_Preserve.jpg?width=300&height=200&scale=upscalecanvas" /></div>
+          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://th03.deviantart.net/fs70/200H/f/2010/256/0/9/painting_of_nature_by_dhikagraph-d2ynalq.jpg" /></div>
+          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://2.bp.blogspot.com/-H6MAoWN-UIE/TuRwLbHRSWI/AAAAAAAABBk/89iiEulVsyg/s400/Free%2BNature%2BPhoto.jpg" /></div>
+          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://blog.arborday.org/wp-content/uploads/2013/02/NEC1-300x200.jpg" /></div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="hideThings()">Primary</button>
+      </div>
+    </div>
+
+
+
+  </div>
+
+  <script>
+  function hideThings() {
+    $('#first').toggleClass('hidden');
+  }
+  </script>
+  <script>
+  function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+  }
+
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+  }
+  </script>
+
+  <script>
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+  </script>
+
+  <script>
+  $(window).scroll(function() {
+    $(".slideanim").each(function(){
+      var pos = $(this).offset().top;
+      var winTop = $(window).scrollTop();
+      if (pos < winTop + 300) {
+        $(this).addClass("slideAni");
+      }
+    });
+  });
+  </script>
+
+</body>
+
+
+
+</html>
