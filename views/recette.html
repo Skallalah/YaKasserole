@@ -52,13 +52,25 @@
     <div id="page-content-wrapper" style="padding: 20px">
       <div class="container-fluid container-main">
         <div class="row">
+          <h1> Nos recettes </h1>
+        </div>
+
+        <div class="row row-10">
+          <div class="col-md-12">
+            <img class="img-responsive" src="https://fakeimg.pl/1920x1080/" alt="first"/>
+          </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row">
           <h1> Recherche </h1>
         </div>
         <div class="row row-10">
-          <div class="col">
+          <div class="col-md-6">
 
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search">
+              <input type="text" class="form-control" placeholder="Rechercher...">
               <div class="input-group-btn">
                 <button class="btn btn-default" type="submit">
                   <i class="glyphicon glyphicon-search"></i>
@@ -67,22 +79,72 @@
             </div>
 
           </div>
-        </div>
-        <div class="row row-10">
-          <div id="first" class="col-xs-6 col-md-3 image">
-            <img class="img-responsive img-shadowed" src="http://2.bp.blogspot.com/-H6MAoWN-UIE/TuRwLbHRSWI/AAAAAAAABBk/89iiEulVsyg/s400/Free%2BNature%2BPhoto.jpg" alt="first"/>
-            <div class="overlay">
-              <div class="text">Hello World</div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <select class="form-control" id="sel1">
+                <option hidden>Trier par...</option>
+                <option>Temps</option>
+                <option>Approbation</option>
+                <option>Alphabétique</option>
+              </select>
             </div>
           </div>
-          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://www.virginia.org/uploadedImages/virginiaorg/Images/OrgImages/H/HamptonConventionVisitorBureau/Grandview_Nature_Preserve.jpg?width=300&height=200&scale=upscalecanvas" /></div>
-          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://blog.arborday.org/wp-content/uploads/2013/02/NEC1-300x200.jpg" /></div>
-          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://th03.deviantart.net/fs70/200H/f/2010/256/0/9/painting_of_nature_by_dhikagraph-d2ynalq.jpg" /></div>
-          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://www.virginia.org/uploadedImages/virginiaorg/Images/OrgImages/H/HamptonConventionVisitorBureau/Grandview_Nature_Preserve.jpg?width=300&height=200&scale=upscalecanvas" /></div>
-          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://th03.deviantart.net/fs70/200H/f/2010/256/0/9/painting_of_nature_by_dhikagraph-d2ynalq.jpg" /></div>
-          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://2.bp.blogspot.com/-H6MAoWN-UIE/TuRwLbHRSWI/AAAAAAAABBk/89iiEulVsyg/s400/Free%2BNature%2BPhoto.jpg" /></div>
-          <div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive img-shadowed" src="http://blog.arborday.org/wp-content/uploads/2013/02/NEC1-300x200.jpg" /></div>
         </div>
+        <div class="row row-10">
+
+          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
+            <div class="recette-container">
+              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
+              <div class="middle">
+                <div class="text">Poulet à la marsallah</div>
+                <div class="text-time">40 minutes</div>
+                <span class="glyphicon glyphicon-heart" style="color:white">
+                  <div class="text">365</div>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
+            <div class="recette-container">
+              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
+              <div class="middle">
+                <div class="text">Pâtes au pesto</div>
+              </div>
+            </div>
+          </div>
+          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
+            <div class="recette-container">
+              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
+              <div class="middle">
+                <div class="text">Boeuf à la Fraise</div>
+              </div>
+            </div>
+          </div>
+          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
+            <div class="recette-container">
+              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
+              <div class="middle">
+                <div class="text">John Doe</div>
+              </div>
+            </div>
+          </div>
+          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
+            <div class="recette-container">
+              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
+              <div class="middle">
+                <div class="text">John Doe</div>
+              </div>
+            </div>
+          </div>
+          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
+            <div class="recette-container">
+              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
+              <div class="middle">
+                <div class="text">John Doe</div>
+              </div>
+            </div>
+          </div>
         <button type="button" class="btn btn-primary" onclick="hideThings()">Primary</button>
       </div>
     </div>
