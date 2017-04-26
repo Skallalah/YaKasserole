@@ -5,6 +5,18 @@
   color: #fff !important;
 }
 
+.btn-success {
+	border-radius: 0px;
+	border-color: transparent;
+	background-color: #D34836 !important;;
+}
+
+.btn-info {
+	border-radius: 0px;
+	border-color: transparent;
+	background-color: #3b5998 !important;;
+}
+
 .navbar {
 	  height: 50px;
     background-color: #464858;
@@ -93,6 +105,5 @@ input[type=text]:focus {
 }
 
 .modal-open {
-
-    overflow: scroll;
+  overflow: scroll;
 }
