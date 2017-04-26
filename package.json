@@ -21,6 +21,7 @@
     "passport": "*",
     "passport-local": "*",
     "passport-facebook": "*",
-    "passport-google-oauth": "*"
+    "passport-google-oauth": "*",
+    "express-session": "*"
   }
 }

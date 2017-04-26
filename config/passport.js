@@ -15,7 +15,7 @@ module.exports = function(passport, pool) {
       return done(null, result);
     })
     .catch((err) => {
-      log.error("/login: " + err);
+      console.log("/login: " + err);
       return done(null, false, {message:'Wrong user name or password'});
     });
   }));
