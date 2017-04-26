@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var pg = require('pg');
+
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -34,6 +34,9 @@ app.use(favicon(path.join(__dirname,'ressources', 'logo_fav.ico')));
 
 app.use('/', index);
 app.use('/users', users);
+
+// Lancement de base de données
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

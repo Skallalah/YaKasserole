@@ -17,6 +17,10 @@
     "bootstrap": "*",
     "pg": "*",
     "socket.io": "*",
-    "jquery": "*"
+    "jquery": "*",
+    "passport": "*",
+    "passport-local": "*",
+    "passport-facebook": "*",
+    "passport-google-oauth": "*"
   }
 }
