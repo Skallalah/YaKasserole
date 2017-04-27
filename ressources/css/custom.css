@@ -1,18 +1,15 @@
 .btn-primary {
-	border-radius: 0px;
 	border-color: transparent;
   background-color: #464858 !important;
   color: #fff !important;
 }
 
 .btn-success {
-	border-radius: 0px;
 	border-color: transparent;
 	background-color: #D34836 !important;;
 }
 
 .btn-info {
-	border-radius: 0px;
 	border-color: transparent;
 	background-color: #3b5998 !important;;
 }
@@ -106,4 +103,35 @@ input[type=text]:focus {
 
 .modal-open {
   overflow: scroll;
+}
+
+.squared {
+	border-radius: 0px;
+}
+
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #464858; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+.loader-small {
+    border: 4px solid #464858; /* Light grey */
+    border-top: 4px solid #fff; /* Blue */
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.center-div {
+     margin: 0 auto;
 }

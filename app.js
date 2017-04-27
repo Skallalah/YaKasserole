@@ -59,7 +59,7 @@ app.use(flash());
 // Déclaration de socket pour les requêtes basiques sans POST.
 var io = require('socket.io')(server);
 
-require('./routes/index')(app, passport, io);
+require('./routes/index')(app, passport, pool);
 require('./config/passport')(passport, pool);
 
 // catch 404 and forward to error handler

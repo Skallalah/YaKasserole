@@ -1,4 +1,4 @@
-module.exports = function(app, passport, io) {
+module.exports = function(app, passport, pool) {
   /* GET home page. */
   app.get('/', function(req, res, next) {
     if (req.isAuthenticated()) {
@@ -11,7 +11,7 @@ module.exports = function(app, passport, io) {
 
   app.get('/recettes', isLoggedIn, function(req, res, next) {
     console.log("mdr");
-    res.render('recette.html', { title: 'Recettes' });
+    res.render('recette.html', { title: 'Recettes', user: req.user });
   });
 
   app.post('/login', passport.authenticate('local', {
@@ -20,11 +20,38 @@ module.exports = function(app, passport, io) {
     failureFlash : true // allow flash messages
   }));
 
+  app.post('/signup', function(req, res, next) {
+    console.log("signup...");
+    pool.query("SELECT add_membre($1, $2, $3, $4, $5, $6, $7, $8, \'membre\')",
+      [req.body.email,
+      req.body.pass,
+      req.body.nom,
+      req.body.prenom,
+      req.body.adresse,
+      req.body.code,
+      060000000,
+      req.body.pays])
+    .then((result)=>{
+      console.log(result);
+      if (result.rows[0].add_membre != 0) {
+        res.send("success");
+      }
+      else {
+        res.send("fail");
+      }
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
 // IO SOCKET EXCHANGE ==========================================================
 
-io.on('connection', function(socket) {
+/*io.on('connection', function(socket) {
   console.log("Client connected !");
-});
+});*/
 
 //==============================================================================
 }
@@ -38,5 +65,5 @@ function isLoggedIn(req, res, next) {
   return next();
 
   // if they aren't redirect them to the home page
-  //res.redirect('/');
+  res.redirect('/');
 }

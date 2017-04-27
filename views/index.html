@@ -2,271 +2,415 @@
 </head>
 <body>
   <nav class="navbar navbar-inverse navbar-static-top navbar-fixed-top">
-    <a href="#" class="pull-left" id="menu-toggle"><img src="/logo.png" width="60" height="50"></a>
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#">Yakasserole</a>
-      </div>
-      <div class="collapse navbar-collapse" id="myNavbar">
-        <ul class="nav navbar-nav">
-          <li><a href="/recettes">Recettes</a></li>
-          <li role="separator" class="divider"></li>
-          <li><a href="#">Ateliers</a></li>
-        </ul>
-
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="#"><span class="glyphicon glyphicon-user"></span> Nous rejoindre</a></li>
-          <li><a href="#" data-toggle="modal" data-target="#modalConnexion"><span class="glyphicon glyphicon-log-in"></span> Se connecter</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <div id="modalConnexion" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Se connecter</h4>
+    <a href="#" class="pull-left" id="<% if (typeof user != 'undefined') {%>menu-toggle<% } %>">
+      <img src="/logo.png" width="60" height="50"></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Yakasserole</a>
         </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="emailConnexion">Email:</label>
-            <input type="text" class="form-control" id="emailConnexion">
-          </div>
-          <div class="form-group">
-            <label for="mdpConnexion">Mot de passe:</label>
-            <input type="password" class="form-control" id="mdpConnexion">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-success" data-dismiss="modal">Google</button>
-          <button type="button" class="btn btn-info" data-dismiss="modal">Facebook</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-          <button  type="button" class="btn btn-primary">Old Connexion</button>
-        </div>
-      </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+          <ul class="nav navbar-nav">
+            <li><a href="/recettes">Recettes</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Ateliers</a></li>
+          </ul>
 
-    </div>
-  </div>
-
-
-
-  <div id="wrapper">
-
-
-    <div id="sidebar-wrapper">
-      <ul class="sidebar-nav">
-        <img src="/personne.jpg" class="img-responsive img-circle center-block" width="130" height="130">
-        <h2 class="text-center" id="nom-nav">
-          <% if (typeof user != 'undefined') { %>
-            <%= user.prenom %>  <%= user.nom %>
-          <% } %>
-        </h2>
-        <hr class="featurette-divider">
-        <li>
-          <a href="#">Mes recettes</a>
-        </li>
-        <li>
-          <a href="#">Mon ateliers</a>
-        </li>
-        <li>
-          <a href="#">Mon profil</a>
-        </li>
-        <li>
-          <a href="#">Se déconnecter</a>
-        </li>
-      </ul>
-    </div>
-
-
-
-    <!---Page content-->
-    <div id="page-content-wrapper">
-
-
-      <div id="container-fluid">
-        <div id="myCarousel" class="carousel slide" data-ride="carousel">
-          <ol class="carousel-indicators">
-            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-            <li data-target="#myCarousel" data-slide-to="1"></li>
-          </ol>
-          <div class="carousel-inner" role="listbox">
-            <div class="item active">
-              <a href="/recettes"><img src="food.jpeg" alt="Chania"></a>
-              <div class="carousel-caption">
-                <h1>Recettes</h1>
-                <p>Une multitude de recettes, accessibles gratuitement, auxquelles vous pouvez contribuer.</p>
-              </div>
-            </div>
-            <div class="item">
-              <a href="#">
-                <img class="img-responsive center-block" src="atelier.jpg" alt="Chania">
-              </a>
-              <div class="carousel-caption d-none d-md-block text-left">
-                <h1>Ateliers</h1>
-                <p>Des ateliers partout en France pour apprendre à cuisiner avec les meilleurs.</p>
-              </div>
+          <ul class="nav navbar-nav navbar-right">
+            <% if (typeof user == 'undefined') {%>
+              <li><a href="#" data-toggle="modal" data-target="#modalInscription"><span class="glyphicon glyphicon-user"></span> Nous rejoindre</a></li>
+              <li><a href="#" data-toggle="modal" data-target="#modalConnexion"><span class="glyphicon glyphicon-log-in"></span> Se connecter</a></li>
+              <% } else { %>
+                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Bienvenue, <%= user.prenom %></a></li>
+                <% } %>
+              </ul>
             </div>
           </div>
-          <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-            <span class="sr-only">Précédent</span>
-          </a>
-          <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-            <span class="sr-only">Suivant</span>
-          </a>
+        </nav>
+
+        <div id="modalConnexion" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Se connecter</h4>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="emailConnexion">Email:</label>
+                  <input type="text" class="form-control squared" id="emailConnexion">
+                </div>
+                <div class="form-group">
+                  <label for="mdpConnexion">Mot de passe:</label>
+                  <input type="password" class="form-control squared" id="mdpConnexion">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success squared" data-dismiss="modal">Google</button>
+                <button type="button" class="btn btn-info squared" data-dismiss="modal">Facebook</button>
+                <button type="button" class="btn btn-default squared" data-dismiss="modal">Fermer</button>
+                <button type="button" onclick="login()" class="btn btn-primary squared">Connexion</button>
+              </div>
+            </div>
+
+
+
+          </div>
         </div>
-        <!--img class="img-responsive" src="food.jpeg" /-->
-        <div class="col-xs-12" style="height:50px;"></div>
 
-
-        <div class="container-fluid container-main">
-          <div class="row">
-            <div class="col-sm-4" align="center">
-              <img src="/bio.jpg" class="img-circle" width="140" height="140">
-              <h2>Denrées bio</h2>
-              <p>Nos ateliers utilisent uniquement des aliments bio, respectant l'environnement et le commerce équitable.</p>
-              <button type="button" class="btn btn-secondary">En savoir plus ></button>
-            </div>
-            <div class="col-sm-4" align="center">
-              <img src="/croix.jpg" class="img-circle" width="140" height="140">
-              <h2>Les associations</h2>
-              <p>Chaque année nous faisons des dons à diverses associations comme “Les Restos du
-                Cœur”, “La Croix Rouge française” et “Ronald McDonald”. Nous soutenons les plus démunis.</p>
-                <button type="button" class="btn btn-secondary">En savoir plus ></button>
+        <div id="modalInscription" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Inscription</h4>
               </div>
-              <div class="col-sm-4" align="center">
-                <img src="/logo.png" class="img-circle" width="170" height="140">
-                <h2>Qui sommes-nous</h2>
-                <p>Notre histoire, notre présence.</p>
-                <button type="button" class="btn btn-secondary">En savoir plus ></button>
-              </div>
-            </div>
-
-            <hr class="featurette-divider">
-
-            <div class="row slideanim">
-              <div class="col-sm-7">
-                <h2> Que proposons-nous ?</h2>
-                <p> YaKasserole propose des ateliers cuisine. Contactez-nous et réservez un atelier pour apprendre la cuisine.
-                  Devenez un as de la cuisine et impressionez votre famille et vos amis ! </p>
-                  <p> Vous pouvez également accéder à nos recettes, conseillées par nos membres de la communauté. Rejoignez-la
+              <div class="modal-body">
+                <div id="inscription-loader" class="loader center-div hidden"></div>
+                <div id="inscription-content" class="">
+                  <div id="inscription-alert"></div>
+                  <div class="form-group">
+                    <label for="emailInscription">Email:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-envelope"></i></span>
+                      <input type="text" class="form-control squared" id="emailInscription">
+                    </div>
                   </div>
-                  <div class="col-sm-5">
-                    <img src="/pot.jpg" width="500" height="340" class="img-responsive">
+                  <div class="form-group">
+                    <label for="mdpInscription">Mot de passe:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-lock"></i></span>
+                      <input type="password" class="form-control squared" id="mdpInscription">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <label for="prenomInscription">Prénom:</label>
+                        <input type="text" class="form-control squared" id="prenomInscription">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="nomInscription">Nom:</label>
+                        <input type="text" class="form-control squared" id="nomInscription">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="adresseInscription">Adresse:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-home"></i></span>
+                      <input type="text" class="form-control squared" id="adresseInscription">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <label for="paysInscription">Pays:</label>
+                        <input type="text" class="form-control squared" id="paysInscription">
+                      </div>
+                      <div class="col-md-4">
+                        <label for="villeInscription">Ville:</label>
+                        <input type="text" class="form-control squared" id="villeInscription">
+                      </div>
+                      <div class="col-md-4">
+                        <label for="codeInscription">Code postal:</label>
+                        <input type="text" class="form-control squared" id="codeInscription">
+                      </div>
+                    </div>
                   </div>
                 </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default squared" data-dismiss="modal">Fermer</button>
+                <button type="button" onclick="signup()" class="btn btn-primary squared" id="inscription-bouton">S'inscrire</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="wrapper">
 
 
-
+          <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <img src="/personne.jpg" class="img-responsive img-circle center-block" width="130" height="130">
+              <h2 class="text-center" id="nom-nav">
+                <% if (typeof user != 'undefined') { %>
+                  <%= user.prenom %>  <%= user.nom %>
+                  <% } %>
+                </h2>
                 <hr class="featurette-divider">
+                <li>
+                  <a href="#">Mes recettes</a>
+                </li>
+                <li>
+                  <a href="#">Mon ateliers</a>
+                </li>
+                <li>
+                  <a href="#">Mon profil</a>
+                </li>
+                <li>
+                  <a href="#">Se déconnecter</a>
+                </li>
+              </ul>
+            </div>
 
 
-                <div class="row slideanim">
-                  <div class="col-sm-5">
-                    <img src="/bio.jpg" width="500" height="340" class="img-responsive center-block">
-                  </div>
-                  <div class="col-sm-7 ">
-                    <p> Avec gluten ou sans, végétarien ou non, il y en a pour tous les goûts !
-                      Nos chefs vous feront découvrir toutes les subtilités de la cuisine, sans modération. Nous attendons votre coup de téléphone !</p>
+
+            <!---Page content-->
+            <div id="page-content-wrapper">
+
+
+              <div id="container-fluid">
+                <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                  <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                  </ol>
+                  <div class="carousel-inner" role="listbox">
+                    <div class="item active">
+                      <a href="/recettes"><img src="food.jpeg" alt="Chania"></a>
+                      <div class="carousel-caption">
+                        <h1>Recettes</h1>
+                        <p>Une multitude de recettes, accessibles gratuitement, auxquelles vous pouvez contribuer.</p>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <a href="#">
+                        <img class="img-responsive center-block" src="atelier.jpg" alt="Chania">
+                      </a>
+                      <div class="carousel-caption d-none d-md-block text-left">
+                        <h1>Ateliers</h1>
+                        <p>Des ateliers partout en France pour apprendre à cuisiner avec les meilleurs.</p>
+                      </div>
                     </div>
                   </div>
+                  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Précédent</span>
+                  </a>
+                  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Suivant</span>
+                  </a>
+                </div>
+                <!--img class="img-responsive" src="food.jpeg" /-->
+                <div class="col-xs-12" style="height:50px;"></div>
 
-                  <hr class="featurette-divider">
 
-                  <div class="row slideanim">
-                    <div class="col-sm-8">
-                      <h2>Qui sommes-nous</h2>
-                      <p>YaKasserole est originaire de Toulouse (31) et possède donc son siège social dans le centre-ville. La plupart des salariés de la société travaillent sur ce site. Nous possédons néanmoins un certains nombres de locaux répartis dans plusieurs villes pour organiser les ateliers culinaires.</p>
-                    </div>
-                    <div class="col-sm-4">
-                      <img src="/logo.png" class="img-responsive center-block" width="300" height="200">
-                    </div>
-                  </div>
-
+                <div class="container-fluid container-main">
                   <div class="row">
-                    <div class="col-sm-7">
+                    <div class="col-sm-4" align="center">
+                      <img src="/bio.jpg" class="img-circle" width="140" height="140">
+                      <h2>Denrées bio</h2>
+                      <p>Nos ateliers utilisent uniquement des aliments bio, respectant l'environnement et le commerce équitable.</p>
+                      <button type="button" class="btn btn-primary squared">En savoir plus ></button>
+                    </div>
+                    <div class="col-sm-4" align="center">
+                      <img src="/croix.jpg" class="img-circle" width="140" height="140">
+                      <h2>Les associations</h2>
+                      <p>Chaque année nous faisons des dons à diverses associations comme “Les Restos du
+                        Cœur”, “La Croix Rouge française” et “Ronald McDonald”. Nous soutenons les plus démunis.</p>
+                        <button type="button" class="btn btn-primary squared">En savoir plus ></button>
+                      </div>
+                      <div class="col-sm-4" align="center">
+                        <img src="/logo.png" class="img-circle" width="170" height="140">
+                        <h2>Qui sommes-nous</h2>
+                        <p>Notre histoire, notre présence.</p>
+                        <button type="button" class="btn btn-primary squared">En savoir plus ></button>
+                      </div>
                     </div>
 
                     <hr class="featurette-divider">
 
                     <div class="row slideanim">
-                      <div class="col-sm-2">
+                      <div class="col-sm-7">
+                        <h2> Que proposons-nous ?</h2>
+                        <p> YaKasserole propose des ateliers cuisine. Contactez-nous et réservez un atelier pour apprendre la cuisine.
+                          Devenez un as de la cuisine et impressionez votre famille et vos amis ! </p>
+                          <p> Vous pouvez également accéder à nos recettes, conseillées par nos membres de la communauté. Rejoignez-la
+                          </div>
+                          <div class="col-sm-5">
+                            <img src="/pot.jpg" width="500" height="340" class="img-responsive">
+                          </div>
+                        </div>
+
+
+
+                        <hr class="featurette-divider">
+
+
+                        <div class="row slideanim">
+                          <div class="col-sm-5">
+                            <img src="/bio.jpg" width="500" height="340" class="img-responsive center-block">
+                          </div>
+                          <div class="col-sm-7 ">
+                            <p> Avec gluten ou sans, végétarien ou non, il y en a pour tous les goûts !
+                              Nos chefs vous feront découvrir toutes les subtilités de la cuisine, sans modération. Nous attendons votre coup de téléphone !</p>
+                            </div>
+                          </div>
+
+                          <hr class="featurette-divider">
+
+                          <div class="row slideanim">
+                            <div class="col-sm-8">
+                              <h2>Qui sommes-nous</h2>
+                              <p>YaKasserole est originaire de Toulouse (31) et possède donc son siège social dans le centre-ville. La plupart des salariés de la société travaillent sur ce site. Nous possédons néanmoins un certains nombres de locaux répartis dans plusieurs villes pour organiser les ateliers culinaires.</p>
+                            </div>
+                            <div class="col-sm-4">
+                              <img src="/logo.png" class="img-responsive center-block" width="300" height="200">
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-sm-7">
+                            </div>
+
+                            <hr class="featurette-divider">
+
+                            <div class="row slideanim">
+                              <div class="col-sm-2">
+                              </div>
+                              <div class="col-sm-8">
+                                <div id="googleMap" style="height:400px;width:100%;"></div>
+                                <script>
+                                function mapToulouse() {
+                                  var myCenter = new google.maps.LatLng(43.604652, 1.444209);
+                                  var mapProp = {center:myCenter, zoom:12, scrollwheel:false, draggable:false, mapTypeId:google.maps.MapTypeId.ROADMAP};
+                                  var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+                                  var marker = new google.maps.Marker({position:myCenter});
+                                  marker.setMap(map);
+                                }
+                                </script>
+                                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkffstTmP840WVO-3vK-gpxAv3Py9fua0&callback=mapToulouse"></script>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div class="col-sm-8">
-                        <div id="googleMap" style="height:400px;width:100%;"></div>
-                        <script>
-                        function mapToulouse() {
-                          var myCenter = new google.maps.LatLng(43.604652, 1.444209);
-                          var mapProp = {center:myCenter, zoom:12, scrollwheel:false, draggable:false, mapTypeId:google.maps.MapTypeId.ROADMAP};
-                          var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-                          var marker = new google.maps.Marker({position:myCenter});
-                          marker.setMap(map);
-                        }
-                        </script>
-                        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkffstTmP840WVO-3vK-gpxAv3Py9fua0&callback=mapToulouse"></script>
-                      </div>
+
+
                     </div>
                   </div>
-                </div>
-              </div>
+                  <hr class="featurette-divider">
+                  <footer class="container-fluid text-center">
+                    <p class="float-right"> © Copyright YaKasserole 2017 </p>
+                  </footer>
 
-              <button type="button" onclick="login()" class="btn btn-primary">Connexion</button>
-            </div>
-          </div>
-          <hr class="featurette-divider">
-          <footer class="container-fluid text-center">
-            <p class="float-right"> © Copyright YaKasserole 2017 </p>
-          </footer>
+                  <script>
+                  function openNav() {
+                    document.getElementById("mySidenav").style.width = "250px";
+                    document.getElementById("main").style.marginLeft = "250px";
+                  }
 
-          <script>
-          function openNav() {
-            document.getElementById("mySidenav").style.width = "250px";
-            document.getElementById("main").style.marginLeft = "250px";
-          }
+                  function closeNav() {
+                    document.getElementById("mySidenav").style.width = "0";
+                    document.getElementById("main").style.marginLeft= "0";
+                  }
+                  </script>
 
-          function closeNav() {
-            document.getElementById("mySidenav").style.width = "0";
-            document.getElementById("main").style.marginLeft= "0";
-          }
-          </script>
+                  <script>
+                  function login() {
+                    $.post("/login", { email: document.getElementById("emailConnexion").value, pass: document.getElementById("mdpConnexion").value },
+                    function(data) {
+                      console.log(data);
+                      $(location).attr("href", "/");
+                    });
+                  }
 
-          <script>
-            function login() {
-              $.post("/login", { email: document.getElementById("emailConnexion").value,
-            pass: document.getElementById("mdpConnexion").value});
-            }
-          </script>
+                  function signup() {
+                    if (document.getElementById("emailInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre email pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("mdpInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre mot de passe pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("prenomInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre prénom pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("nomInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre nom pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("adresseInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre addresse pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("paysInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre pays pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("villeInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre ville pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("codeInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre code postal pour l'inscription.</div>";
+                      return;
+                    }
+                    document.getElementById("inscription-alert").innerHTML = ""
+                    $("#inscription-bouton").prop('disabled', true);
+                    $("#inscription-content").toggleClass("hidden");
+                    $("#inscription-loader").toggleClass("hidden");
+                    $.post("/signup",
+                    { email: document.getElementById("emailInscription").value,
+                      pass: document.getElementById("mdpInscription").value,
+                      prenom: document.getElementById("prenomInscription").value,
+                      nom: document.getElementById("nomInscription").value,
+                      adresse: document.getElementById("adresseInscription").value,
+                      pays: document.getElementById("paysInscription").value,
+                      ville: document.getElementById("villeInscription").value,
+                      code: document.getElementById("codeInscription").value
+                    },
+                    function(data) {
+                      $("#inscription-bouton").prop('disabled', false);
+                      $("#inscription-content").toggleClass("hidden");
+                      $("#inscription-loader").toggleClass("hidden");
+                      console.log(data);
+                      if (data == 'success') {
+                        document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Votre inscription est réussie, vous pouvez désormais vous connecter.</div>";
+                      }
+                      else if (data == "error") {
+                        document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Une erreur a eu lieu, veuilez rééssayez ultérieurement.</div>";
+                      }
+                      else {
+                        document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Cette addresse email est déjà attribué à un compte.</div>";
+                      }
+                      //$(location).attr("href", "/");
+                    });
+                  }
 
-          <script>
-          if (1 == 1) { // A modifier.
-            $("#menu-toggle").click(function(e) {
-              e.preventDefault();
-              $("#wrapper").toggleClass("toggled");
-            });
-          }
-          </script>
+                  </script>
 
-          <script>
-          $(window).scroll(function() {
-            $(".slideanim").each(function(){
-              var pos = $(this).offset().top;
-              var winTop = $(window).scrollTop();
-              if (pos < winTop + 600) {
-                $(this).addClass("slideAni");
-              }
-            });
-          });
-          </script>
+                  <script>
+                  if (1 == 1) { // A modifier.
+                    $("#menu-toggle").click(function(e) {
+                      e.preventDefault();
+                      $("#wrapper").toggleClass("toggled");
+                    });
+                  }
+                  </script>
 
-        </body>
+                  <script>
+                  $(window).scroll(function() {
+                    $(".slideanim").each(function(){
+                      var pos = $(this).offset().top;
+                      var winTop = $(window).scrollTop();
+                      if (pos < winTop + 600) {
+                        $(this).addClass("slideAni");
+                      }
+                    });
+                  });
+                  </script>
+
+                </body>
 </html>
