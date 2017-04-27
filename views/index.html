@@ -50,7 +50,7 @@
           <button type="button" class="btn btn-success" data-dismiss="modal">Google</button>
           <button type="button" class="btn btn-info" data-dismiss="modal">Facebook</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-          <button type="button" class="btn btn-primary">Connexion</button>
+          <button  type="button" class="btn btn-primary">Old Connexion</button>
         </div>
       </div>
 
@@ -65,7 +65,11 @@
     <div id="sidebar-wrapper">
       <ul class="sidebar-nav">
         <img src="/personne.jpg" class="img-responsive img-circle center-block" width="130" height="130">
-        <h2 class="text-center"> Lucien Daignault </h2>
+        <h2 class="text-center" id="nom-nav">
+          <% if (typeof user != 'undefined') { %>
+            <%= user.prenom %>  <%= user.nom %>
+          <% } %>
+        </h2>
         <hr class="featurette-divider">
         <li>
           <a href="#">Mes recettes</a>
@@ -215,6 +219,8 @@
                   </div>
                 </div>
               </div>
+
+              <button type="button" onclick="login()" class="btn btn-primary">Connexion</button>
             </div>
           </div>
           <hr class="featurette-divider">
@@ -235,10 +241,19 @@
           </script>
 
           <script>
-          $("#menu-toggle").click(function(e) {
-            e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
-          });
+            function login() {
+              $.post("/login", { email: document.getElementById("emailConnexion").value,
+            pass: document.getElementById("mdpConnexion").value});
+            }
+          </script>
+
+          <script>
+          if (1 == 1) { // A modifier.
+            $("#menu-toggle").click(function(e) {
+              e.preventDefault();
+              $("#wrapper").toggleClass("toggled");
+            });
+          }
           </script>
 
           <script>

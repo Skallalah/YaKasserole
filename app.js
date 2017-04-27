@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
+var flash    = require('connect-flash');
 
 var app = express();
 
@@ -53,8 +54,12 @@ pool.on('error', function(e, client) {
 app.use(session({ secret: 'mamenempereurdusale' })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
+app.use(flash());
 
-require('./routes/index')(app, passport);
+// Déclaration de socket pour les requêtes basiques sans POST.
+var io = require('socket.io')(server);
+
+require('./routes/index')(app, passport, io);
 require('./config/passport')(passport, pool);
 
 // catch 404 and forward to error handler
