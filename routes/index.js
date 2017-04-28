@@ -20,9 +20,30 @@ module.exports = function(app, passport, pool) {
     failureFlash : true // allow flash messages
   }));
 
+  app.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+  });
+
+   app.get('/auth/facebook', passport.authenticate('facebook', { scope : [ 'email', 'public_profile' ] }));
+
+   app.get('/auth/facebook/callback',
+      passport.authenticate('facebook', {
+        successRedirect : '/',
+        failureRedirect : '/'
+    }));
+
+    app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+
+    app.get('/auth/google/callback',
+      passport.authenticate('google', {
+        successRedirect : '/',
+        failureRedirect : '/'
+    }));
+
   app.post('/signup', function(req, res, next) {
     console.log("signup...");
-    pool.query("SELECT add_membre($1, $2, $3, $4, $5, $6, $7, $8, \'membre\')",
+    pool.query("SELECT add_membre($1, $2, $3, $4, $5, $6, $7, $8, $9, \'membre\', 0)",
       [req.body.email,
       req.body.pass,
       req.body.nom,
@@ -30,10 +51,11 @@ module.exports = function(app, passport, pool) {
       req.body.adresse,
       req.body.code,
       060000000,
-      req.body.pays])
+      req.body.pays,
+      req.body.ville])
     .then((result)=>{
       console.log(result);
-      if (result.rows[0].add_membre != 0) {
+      if (result.rows[0].add_membre == 1) {
         res.send("success");
       }
       else {

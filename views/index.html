@@ -52,9 +52,8 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-success squared" data-dismiss="modal">Google</button>
-                <button type="button" class="btn btn-info squared" data-dismiss="modal">Facebook</button>
-                <button type="button" class="btn btn-default squared" data-dismiss="modal">Fermer</button>
+                <a href="/auth/google" type="button" class="btn btn-success squared pull-left btn-sq-xs"><b>G+</b></a>
+                <a href="/auth/facebook" type="button" class="btn btn-info squared pull-left btn-sq-xs"><b>F</b></a>
                 <button type="button" onclick="login()" class="btn btn-primary squared">Connexion</button>
               </div>
             </div>
@@ -127,7 +126,6 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default squared" data-dismiss="modal">Fermer</button>
                 <button type="button" onclick="signup()" class="btn btn-primary squared" id="inscription-bouton">S'inscrire</button>
               </div>
             </div>
@@ -156,7 +154,7 @@
                   <a href="#">Mon profil</a>
                 </li>
                 <li>
-                  <a href="#">Se déconnecter</a>
+                  <a href="/logout">Se déconnecter</a>
                 </li>
               </ul>
             </div>

@@ -14,6 +14,7 @@ CREATE TABLE compte (
   nom VARCHAR(255),
   adresse VARCHAR(255),
   pays VARCHAR(255),
+  ville VARCHAR(255),
   telephone INT,
   code_postal INT,
   pwd TEXT,
@@ -119,16 +120,18 @@ Sinon 1
 CREATE OR REPLACE FUNCTION ADD_MEMBRE(email_ VARCHAR(255), pwd_ TEXT,
                                        nom_ VARCHAR(255), prenom_ VARCHAR(255),
                                        adresse_ VARCHAR(255), code_postal_ INT,
-                                       telephone_ INT, pays_ VARCHAR(255), status_ VARCHAR(30))
+                                       telephone_ INT, pays_ VARCHAR(255),
+                                       ville_ VARCHAR(255), status_ VARCHAR(30),
+                                       token_ INT)
        RETURNS INT AS
 $$
 BEGIN
-        PERFORM * from compte where compte.email = email_;
+        PERFORM * from compte where compte.email= email_ and compte.token = token_;
         IF found = TRUE THEN
            RETURN 0;
         END IF;
-        INSERT INTO compte(email, pwd, nom, prenom, adresse, code_postal, telephone, pays, status, token)
-        VALUES (email_, pwd_, nom_, prenom_, adresse_, code_postal_, telephone_, pays_, status_, NULL);
+        INSERT INTO compte(email, pwd, nom, prenom, adresse, code_postal, telephone, pays, ville, status, token)
+        VALUES (email_, pwd_, nom_, prenom_, adresse_, code_postal_, telephone_, pays_, ville_, status_, token_);
         RETURN 1;
         EXCEPTION
         WHEN OTHERS THEN RETURN 2;

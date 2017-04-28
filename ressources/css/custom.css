@@ -4,14 +4,30 @@
   color: #fff !important;
 }
 
+.btn-primary:hover {
+	border-color: transparent;
+  background-color: #2d2f38 !important;
+  color: #fff !important;
+}
+
 .btn-success {
 	border-color: transparent;
 	background-color: #D34836 !important;;
 }
 
+.btn-success:hover {
+	border-color: transparent;
+	background-color: #a5382a !important;;
+}
+
 .btn-info {
 	border-color: transparent;
 	background-color: #3b5998 !important;;
+}
+
+.btn-info:hover {
+	border-color: transparent;
+	background-color: #2a3b60 !important;;
 }
 
 .navbar {
@@ -109,6 +125,10 @@ input[type=text]:focus {
 	border-radius: 0px;
 }
 
+.rounded {
+	border-radius: 20px;
+}
+
 .loader {
     border: 16px solid #f3f3f3; /* Light grey */
     border-top: 16px solid #464858; /* Blue */
@@ -134,4 +154,28 @@ input[type=text]:focus {
 
 .center-div {
      margin: 0 auto;
+}
+
+/* Boutons carrés à taille variées */
+.btn-sq-lg {
+  width: 150px !important;
+  height: 150px !important;
+}
+
+.btn-sq {
+  width: 100px !important;
+  height: 100px !important;
+  font-size: 10px;
+}
+
+.btn-sq-sm {
+  width: 50px !important;
+  height: 50px !important;
+  font-size: 10px;
+}
+
+.btn-sq-xs {
+  width: 34px !important;
+  height: 34px !important;
+  padding:0px;
 }
