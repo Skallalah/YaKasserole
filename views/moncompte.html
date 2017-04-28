@@ -1,0 +1,227 @@
+<% include layout.html %>
+<link rel="stylesheet" type="text/css" href="/css/recette.css">
+</head>
+<body>
+
+  <nav class="navbar navbar-inverse navbar-static-top navbar-fixed-top">
+    <a href="#" class="pull-left" id="<% if (typeof user != 'undefined') {%>menu-toggle<% } %>">
+    <img src="/logo.png" width="60" height="50"></a>
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">Yakasserole</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a href="/recettes">Recettes</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Ateliers</a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <% if (typeof user == 'undefined') {%>
+            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Nous rejoindre</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#modalConnexion"><span class="glyphicon glyphicon-log-in"></span> Se connecter</a></li>
+          <% } else { %>
+            <li><a href="/moncompte"><span class="glyphicon glyphicon-user"></span> Bienvenue, <%= user.prenom %></a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div id="wrapper">
+    <div id="sidebar-wrapper">
+      <ul class="sidebar-nav">
+        <img src="<% if (typeof user != 'undefined') { %>
+                    <% if (user.img == null) {%>
+                      /person-placeholder.jpg
+                    <% } else { %>
+                      <%= user.img %>
+                    <% } %>
+                  <% } %>" class="img-responsive img-circle center-block" width="130" height="130">
+        <h2 class="text-center" id="nom-nav">
+          <% if (typeof user != 'undefined') { %>
+            <%= user.prenom %>  <%= user.nom %>
+          <% } %>
+        </h2>
+        <hr class="featurette-divider">
+        <li>
+          <a href="#">Mes recettes</a>
+        </li>
+        <li>
+          <a href="#">Mon ateliers</a>
+        </li>
+        <li>
+          <a href="/moncompte">Mon profil</a>
+        </li>
+        <li>
+          <a href="/logout">Se déconnecter</a>
+        </li>
+      </ul>
+    </div>
+    <div id="page-content-wrapper" style="padding: 20px">
+      <div class="container-fluid container-main">
+
+        <div class="row">
+          <div class="col-md-5">
+            <div class="row">
+              <div class="col-md-12">
+                <img src="<% if (typeof user != 'undefined') { %>
+                            <% if (user.img == null) {%>
+                              /person-placeholder.jpg
+                            <% } else { %>
+                              <%= user.img %>
+                            <% } %>
+                          <% } %>" class="img-responsive img-thumbnail center-block" width="250" height="250">
+              </div>
+            </div>
+            <div class="row row-10">
+              <div class="col-md-12">
+                <button type="button" class="btn btn-warning center-block"><span class="glyphicon glyphicon-star"></span><b> Passer premium<b></button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-7">
+                <h1><% if (typeof user != 'undefined') { %>
+                <%= user.prenom %>  <%= user.nom %>
+                <% } %></h1>
+                <hr class="featurette-divider">
+
+                <div><div class="profile-row">Email
+                  <div class="profile-text">
+                    <% if (typeof user != 'undefined') { %>
+                      <% if (user.email == null) {%>
+                        -
+                      <% } else { %>
+                        <%= user.email %>
+                      <% } %>
+                    <% } %>
+                  </div>
+                </div>
+                </div>
+
+                <div><div class="profile-row">Téléphone
+                  <div class="profile-text">
+                    <% if (typeof user != 'undefined') { %>
+                      <% if (user.telephone == null) {%>
+                        -
+                      <% } else { %>
+                        <%= user.telephone %>
+                      <% } %>
+                    <% } %>
+                  </div>
+                </div>
+                </div>
+
+                <hr class="featurette-divider">
+
+                <div><div class="profile-row">Pays
+                  <div class="profile-text">
+                    <% if (typeof user != 'undefined') { %>
+                      <% if (user.pays == null) {%>
+                        -
+                      <% } else { %>
+                        <%= user.pays %>
+                      <% } %>
+                    <% } %>
+                  </div>
+                </div>
+                </div>
+
+                <div><div class="profile-row">Ville
+                  <div class="profile-text">
+                    <% if (typeof user != 'undefined') { %>
+                      <% if (user.ville == null) {%>
+                        -
+                      <% } else { %>
+                        <%= user.ville %>
+                      <% } %>
+                    <% } %>
+                  </div>
+                </div>
+                </div>
+
+                <div><div class="profile-row">Adresse
+                  <div class="profile-text">
+                    <% if (typeof user != 'undefined') { %>
+                      <% if (user.adresse == null) {%>
+                        -
+                      <% } else { %>
+                        <%= user.adresse %>
+                      <% } %>
+                    <% } %>
+                  </div>
+                </div>
+                </div>
+
+                <div><div class="profile-row">Code postal
+                  <div class="profile-text">
+                    <% if (typeof user != 'undefined') { %>
+                      <% if (user.code_postal == null) {%>
+                        -
+                      <% } else { %>
+                        <%= user.code_postal %>
+                      <% } %>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              </div>
+
+            </div>
+            <hr class="featurette-divider">
+            <div class="row">
+              <h1>Transactions</h1>
+            </div>
+          </div>
+
+
+    </div>
+  </div>
+
+  <script>
+  function hideThings() {
+    $('#first').toggleClass('hidden');
+  }
+  </script>
+  <script>
+  function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+  }
+
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+  }
+  </script>
+
+  <script>
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+  </script>
+
+  <script>
+  $(window).scroll(function() {
+    $(".slideanim").each(function(){
+      var pos = $(this).offset().top;
+      var winTop = $(window).scrollTop();
+      if (pos < winTop + 300) {
+        $(this).addClass("slideAni");
+      }
+    });
+  });
+  </script>
+
+</body>
+
+
+
+</html>

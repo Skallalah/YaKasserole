@@ -27,7 +27,7 @@
             <li><a href="#"><span class="glyphicon glyphicon-user"></span> Nous rejoindre</a></li>
             <li><a href="#" data-toggle="modal" data-target="#modalConnexion"><span class="glyphicon glyphicon-log-in"></span> Se connecter</a></li>
           <% } else { %>
-            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Bienvenue, <%= user.prenom %></a></li>
+            <li><a href="/moncompte"><span class="glyphicon glyphicon-user"></span> Bienvenue, <%= user.prenom %></a></li>
           <% } %>
         </ul>
       </div>
@@ -51,10 +51,10 @@
           <a href="#">Mon ateliers</a>
         </li>
         <li>
-          <a href="#">Mon profil</a>
+          <a href="/moncompte">Mon profil</a>
         </li>
         <li>
-          <a href="#">Se déconnecter</a>
+          <a href="/logout">Se déconnecter</a>
         </li>
       </ul>
     </div>
@@ -107,9 +107,7 @@
               <div class="middle">
                 <div class="text">Poulet à la marsallah</div>
                 <div class="text-time">40 minutes</div>
-                <span class="glyphicon glyphicon-heart" style="color:white">
-                  <div class="text">365</div>
-                </span>
+                <span class="glyphicon glyphicon-heart" style="color:white"></span><div class="text">365</div>
               </div>
             </div>
           </div>

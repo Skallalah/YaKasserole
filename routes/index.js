@@ -14,6 +14,11 @@ module.exports = function(app, passport, pool) {
     res.render('recette.html', { title: 'Recettes', user: req.user });
   });
 
+  app.get('/moncompte', isLoggedIn, function(req, res, next) {
+    console.log("mdr");
+    res.render('moncompte.html', { title: 'Mon Compte', user: req.user });
+  });
+
   app.post('/login', passport.authenticate('local', {
     successRedirect : '/recettes', // redirect to the secure profile section
     failureRedirect : '/', // redirect back to the signup page if there is an error

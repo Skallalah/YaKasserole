@@ -179,3 +179,28 @@ input[type=text]:focus {
   height: 34px !important;
   padding:0px;
 }
+
+
+/* Différentes parties du profil */
+
+.profile-row {
+	display: inline-block;
+	font-size: 17px;
+  font-weight: bold;
+}
+
+.profile-row .profile-text {
+	padding-left: 10px;
+	display: inline-block;
+	font-size: 13px;
+	font-weight: normal;
+}
+
+/* Petite image en haut à droite. */
+.post-thumb img {
+    float: left;
+}
+
+.post-content {
+    float: left;
+}

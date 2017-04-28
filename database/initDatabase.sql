@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS transactions CASCADE;
 
 CREATE TABLE compte (
   id SERIAL PRIMARY KEY,
+  img VARCHAR(255),
   email VARCHAR(255),
   prenom VARCHAR(255),
   nom VARCHAR(255),
