@@ -137,27 +137,33 @@
 
           <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
-              <img src="/personne.jpg" class="img-responsive img-circle center-block" width="130" height="130">
+              <img src="<% if (typeof user != 'undefined') { %>
+                          <% if (user.url_img == null) {%>
+                            /person-placeholder.jpg
+                          <% } else { %>
+                            <%= user.url_img %>
+                          <% } %>
+                        <% } %>" class="img-responsive img-circle center-block" width="130" height="130">
               <h2 class="text-center" id="nom-nav">
                 <% if (typeof user != 'undefined') { %>
                   <%= user.prenom %>  <%= user.nom %>
-                  <% } %>
-                </h2>
-                <hr class="featurette-divider">
-                <li>
-                  <a href="#">Mes recettes</a>
-                </li>
-                <li>
-                  <a href="#">Mon ateliers</a>
-                </li>
-                <li>
-                  <a href="/moncompte">Mon profil</a>
-                </li>
-                <li>
-                  <a href="/logout">Se déconnecter</a>
-                </li>
-              </ul>
-            </div>
+                <% } %>
+              </h2>
+              <hr class="featurette-divider">
+              <li>
+                <a href="#">Mes recettes</a>
+              </li>
+              <li>
+                <a href="#">Mon ateliers</a>
+              </li>
+              <li>
+                <a href="/moncompte">Mon profil</a>
+              </li>
+              <li>
+                <a href="/logout">Se déconnecter</a>
+              </li>
+            </ul>
+          </div>
 
 
 

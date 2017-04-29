@@ -48,14 +48,21 @@ module.exports = function(app, passport, pool) {
 
   app.post('/signup', function(req, res, next) {
     console.log("signup...");
-    pool.query("SELECT add_membre($1, $2, $3, $4, $5, $6, $7, $8, $9, \'membre\', 0)",
+    console.log(req.body.email);
+    console.log(req.body.pass);
+    console.log(req.body.nom);
+    console.log(req.body.prenom);
+    console.log(req.body.adresse);
+    console.log(req.body.code);
+    console.log(req.body.pays);
+    console.log(req.body.ville);
+    pool.query("SELECT add_membre($1, $2, NULL, $3, $4, $5, $6, \'000000\', $7, $8, \'Membre\', 0)",
       [req.body.email,
       req.body.pass,
       req.body.nom,
       req.body.prenom,
       req.body.adresse,
       req.body.code,
-      060000000,
       req.body.pays,
       req.body.ville])
     .then((result)=>{

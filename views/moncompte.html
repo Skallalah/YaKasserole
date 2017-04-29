@@ -38,10 +38,10 @@
     <div id="sidebar-wrapper">
       <ul class="sidebar-nav">
         <img src="<% if (typeof user != 'undefined') { %>
-                    <% if (user.img == null) {%>
+                    <% if (user.url_img == null) {%>
                       /person-placeholder.jpg
                     <% } else { %>
-                      <%= user.img %>
+                      <%= user.url_img %>
                     <% } %>
                   <% } %>" class="img-responsive img-circle center-block" width="130" height="130">
         <h2 class="text-center" id="nom-nav">
@@ -72,10 +72,10 @@
             <div class="row">
               <div class="col-md-12">
                 <img src="<% if (typeof user != 'undefined') { %>
-                            <% if (user.img == null) {%>
+                            <% if (user.url_img == null) {%>
                               /person-placeholder.jpg
                             <% } else { %>
-                              <%= user.img %>
+                              <%= user.url_img %>
                             <% } %>
                           <% } %>" class="img-responsive img-thumbnail center-block" width="250" height="250">
               </div>

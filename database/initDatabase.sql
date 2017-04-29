@@ -1,87 +1,214 @@
-DROP TABLE IF EXISTS recette CASCADE;
-DROP TABLE IF EXISTS compte CASCADE;
-DROP TABLE IF EXISTS atelier CASCADE;
-DROP TABLE IF EXISTS inscrit CASCADE;
-DROP TABLE IF EXISTS comment CASCADE;
-DROP TABLE IF EXISTS etape_in_recette CASCADE;
-DROP TABLE IF EXISTS recette_etape CASCADE;
-DROP TABLE IF EXISTS transactions CASCADE;
+-- foreign keys
+ALTER TABLE aimer
+    DROP CONSTRAINT aimer_compte;
 
-CREATE TABLE compte (
-  id SERIAL PRIMARY KEY,
-  img VARCHAR(255),
-  email VARCHAR(255),
-  prenom VARCHAR(255),
-  nom VARCHAR(255),
-  adresse VARCHAR(255),
-  pays VARCHAR(255),
-  ville VARCHAR(255),
-  telephone INT,
-  code_postal INT,
-  pwd TEXT,
-  status VARCHAR(30),
-  token INT
+ALTER TABLE aimer
+    DROP CONSTRAINT aimer_recette;
+
+ALTER TABLE commentaire
+    DROP CONSTRAINT commentaire_compte;
+
+ALTER TABLE commentaire
+    DROP CONSTRAINT commentaire_recette;
+
+ALTER TABLE etape_recette
+    DROP CONSTRAINT etape_recette_recette;
+
+ALTER TABLE inscrit
+    DROP CONSTRAINT inscrit_atelier;
+
+ALTER TABLE inscrit
+    DROP CONSTRAINT inscrit_compte;
+
+ALTER TABLE recette
+    DROP CONSTRAINT recette_compte;
+
+ALTER TABLE transaction
+    DROP CONSTRAINT transaction_atelier;
+
+ALTER TABLE transaction
+    DROP CONSTRAINT transaction_compte;
+
+-- tables
+DROP TABLE aimer;
+DROP TABLE atelier;
+DROP TABLE commentaire;
+DROP TABLE compte;
+DROP TABLE etape_recette;
+DROP TABLE inscrit;
+DROP TABLE recette;
+DROP TABLE transaction;
+
+
+-- tables
+-- Table: aimer
+CREATE TABLE aimer (
+    id_compte int  NOT NULL,
+    id_recette int  NOT NULL,
+    CONSTRAINT aimer_pk PRIMARY KEY (id_compte,id_recette)
 );
 
---get_status;
-
+-- Table: atelier
 CREATE TABLE atelier (
-  id SERIAL PRIMARY KEY,
-  id_creator INT,
-  url_img VARCHAR(255),
-  price NUMERIC,
-  nb_max INT,
-  FOREIGN KEY(id_creator) REFERENCES compte(id)
+    id serial  NOT NULL,
+    nom varchar(255)  NOT NULL,
+    date timestamp  NOT NULL,
+    duree time  NOT NULL,
+    url_img varchar(255)  NULL,
+    nb_personne int  NOT NULL,
+    informations text  NOT NULL,
+    ville varchar(255)  NOT NULL,
+    adresse varchar(255)  NOT NULL,
+    pays varchar(255)  NOT NULL,
+    code_postal int  NOT NULL,
+    valide boolean  NOT NULL,
+    CONSTRAINT atelier_pk PRIMARY KEY (id)
 );
 
+-- Table: commentaire
+CREATE TABLE commentaire (
+    id_compte int  NOT NULL,
+    id_recette int  NOT NULL,
+    contenu text  NOT NULL,
+    CONSTRAINT commentaire_pk PRIMARY KEY (id_compte,id_recette)
+);
+
+-- Table: compte
+CREATE TABLE compte (
+    id serial  NOT NULL,
+    url_img varchar(255)  NULL,
+    email varchar(255)  NOT NULL,
+    prenom varchar(255)  NOT NULL,
+    nom varchar(255)  NOT NULL,
+    adresse varchar(255)  NULL,
+    pays varchar(255)  NULL,
+    ville varchar(255)  NULL,
+    code_postal int  NULL,
+    telephone varchar(15)  NULL,
+    pwd varchar(30)  NULL,
+    token int  NOT NULL,
+    status varchar(30)  NOT NULL,
+    premium timestamp  NULL,
+    CONSTRAINT compte_pk PRIMARY KEY (id)
+);
+
+-- Table: etape_recette
+CREATE TABLE etape_recette (
+    id_recette int  NOT NULL,
+    n_etape int  NOT NULL,
+    contenu text  NOT NULL,
+    CONSTRAINT etape_recette_pk PRIMARY KEY (id_recette,n_etape)
+);
+
+-- Table: inscrit
 CREATE TABLE inscrit (
-  id_atelier INT,
-  id_member INT,
-  FOREIGN KEY(id_atelier) REFERENCES atelier(id),
-  FOREIGN KEY(id_member) REFERENCES compte(id)
+    id_compte int  NOT NULL,
+    id_atelier int  NOT NULL,
+    CONSTRAINT inscrit_pk PRIMARY KEY (id_compte,id_atelier)
 );
 
-
+-- Table: recette
 CREATE TABLE recette (
-  id SERIAL,
-  name VARCHAR(255),
-  likes INT,
-  url_img VARCHAR(255),
-  time TIMESTAMP,
-  id_creator INT,
-  id_content INT,
-  PRIMARY KEY(id)
+    id serial  NOT NULL,
+    id_compte int  NOT NULL,
+    url_img varchar(255)  NULL,
+    tmp_prep time  NOT NULL,
+    nb_personne int  NOT NULL,
+    date_creation date  NOT NULL,
+    valide boolean  NOT NULL,
+    CONSTRAINT recette_pk PRIMARY KEY (id)
 );
 
-CREATE TABLE comment (
-  id_recette INT,
-  id_member INT,
-  content TEXT,
-  FOREIGN KEY(id_recette) REFERENCES recette(id),
-  FOREIGN KEY(id_member) REFERENCES compte(id)
+-- Table: transaction
+CREATE TABLE transaction (
+    id_compte int  NOT NULL,
+    id_atelier int  NULL,
+    date timestamp  NOT NULL,
+    somme money  NOT NULL,
+    CONSTRAINT transaction_pk PRIMARY KEY (id_compte)
 );
 
+-- foreign keys
+-- Reference: aimer_compte (table: aimer)
+ALTER TABLE aimer ADD CONSTRAINT aimer_compte
+    FOREIGN KEY (id_compte)
+    REFERENCES compte (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
 
-CREATE TABLE recette_etape (
-  id SERIAL PRIMARY KEY,
-  content TEXT
-);
+-- Reference: aimer_recette (table: aimer)
+ALTER TABLE aimer ADD CONSTRAINT aimer_recette
+    FOREIGN KEY (id_recette)
+    REFERENCES recette (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
 
-CREATE TABLE etape_in_recette (
-  id_recette INT,
-  id_etape INT,
-  FOREIGN KEY(id_recette) REFERENCES recette(id),
-  FOREIGN KEY(id_etape) REFERENCES recette_etape(id)
-);
+-- Reference: commentaire_compte (table: commentaire)
+ALTER TABLE commentaire ADD CONSTRAINT commentaire_compte
+    FOREIGN KEY (id_compte)
+    REFERENCES compte (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
 
-CREATE TABLE transactions (
-  id_member INT,
-  timeof TIMESTAMP,
-  price NUMERIC,
-  id_atelier INT,
-  FOREIGN KEY(id_atelier) REFERENCES atelier(id),
-  FOREIGN KEY(id_member) REFERENCES compte(id)
-);
+-- Reference: commentaire_recette (table: commentaire)
+ALTER TABLE commentaire ADD CONSTRAINT commentaire_recette
+    FOREIGN KEY (id_recette)
+    REFERENCES recette (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: etape_recette_recette (table: etape_recette)
+ALTER TABLE etape_recette ADD CONSTRAINT etape_recette_recette
+    FOREIGN KEY (id_recette)
+    REFERENCES recette (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: inscrit_atelier (table: inscrit)
+ALTER TABLE inscrit ADD CONSTRAINT inscrit_atelier
+    FOREIGN KEY (id_atelier)
+    REFERENCES atelier (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: inscrit_compte (table: inscrit)
+ALTER TABLE inscrit ADD CONSTRAINT inscrit_compte
+    FOREIGN KEY (id_compte)
+    REFERENCES compte (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: recette_compte (table: recette)
+ALTER TABLE recette ADD CONSTRAINT recette_compte
+    FOREIGN KEY (id_compte)
+    REFERENCES compte (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: transaction_atelier (table: transaction)
+ALTER TABLE transaction ADD CONSTRAINT transaction_atelier
+    FOREIGN KEY (id_atelier)
+    REFERENCES atelier (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: transaction_compte (table: transaction)
+ALTER TABLE transaction ADD CONSTRAINT transaction_compte
+    FOREIGN KEY (id_compte)
+    REFERENCES compte (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
+
 
 /*
                       GET STATUS
@@ -118,10 +245,10 @@ On vérifie seulement si l'email existe, dans ce cas on renvoie 0
 Exception : 2
 Sinon 1
 */
-CREATE OR REPLACE FUNCTION ADD_MEMBRE(email_ VARCHAR(255), pwd_ TEXT,
+CREATE OR REPLACE FUNCTION ADD_MEMBRE(email_ VARCHAR(255), pwd_ VARCHAR(30), img_url_ VARCHAR(255),
                                        nom_ VARCHAR(255), prenom_ VARCHAR(255),
                                        adresse_ VARCHAR(255), code_postal_ INT,
-                                       telephone_ INT, pays_ VARCHAR(255),
+                                       telephone_ VARCHAR(15), pays_ VARCHAR(255),
                                        ville_ VARCHAR(255), status_ VARCHAR(30),
                                        token_ INT)
        RETURNS INT AS
@@ -131,8 +258,8 @@ BEGIN
         IF found = TRUE THEN
            RETURN 0;
         END IF;
-        INSERT INTO compte(email, pwd, nom, prenom, adresse, code_postal, telephone, pays, ville, status, token)
-        VALUES (email_, pwd_, nom_, prenom_, adresse_, code_postal_, telephone_, pays_, ville_, status_, token_);
+        INSERT INTO compte
+        VALUES (DEFAULT, img_url_, email_, prenom_, nom_, adresse_, pays_, ville_, code_postal_, telephone_, pwd_, token_, status_, NULL);
         RETURN 1;
         EXCEPTION
         WHEN OTHERS THEN RETURN 2;

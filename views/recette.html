@@ -37,7 +37,13 @@
   <div id="wrapper">
     <div id="sidebar-wrapper">
       <ul class="sidebar-nav">
-        <img src="/personne.jpg" class="img-responsive img-circle center-block" width="130" height="130">
+        <img src="<% if (typeof user != 'undefined') { %>
+                    <% if (user.url_img == null) {%>
+                      /person-placeholder.jpg
+                    <% } else { %>
+                      <%= user.url_img %>
+                    <% } %>
+                  <% } %>" class="img-responsive img-circle center-block" width="130" height="130">
         <h2 class="text-center" id="nom-nav">
           <% if (typeof user != 'undefined') { %>
             <%= user.prenom %>  <%= user.nom %>

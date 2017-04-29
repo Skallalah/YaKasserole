@@ -70,7 +70,7 @@ module.exports = function(passport, pool) {
        clientID        : configAuth.facebookAuth.clientID,
        clientSecret    : configAuth.facebookAuth.clientSecret,
        callbackURL     : configAuth.facebookAuth.callbackURL,
-       profileFields: ['id', 'emails', 'name']
+       profileFields: ['id', 'emails', 'name', 'photos']
    },
    // facebook will send back the token and profile
    function(token, refreshToken, profile, done) {
@@ -78,8 +78,9 @@ module.exports = function(passport, pool) {
      console.log(profile);
      console.log(profile.emails[0].value);
      console.log(token);
-     return pool.query("SELECT add_membre($1, NULL, $2, $3, NULL, NULL, NULL, NULL, NULL, \'membre\', 1)",
+     return pool.query("SELECT add_membre($1, NULL, $2, $3, $4, NULL, NULL, NULL, NULL, NULL, \'Membre\', 1)",
      [profile.emails[0].value,
+     profile.photos[0].value,
      profile.name.familyName,
      profile.name.givenName])
      .then((result)=>{
@@ -126,12 +127,13 @@ module.exports = function(passport, pool) {
     },
     // facebook will send back the token and profile
     function(token, refreshToken, profile, done) {
-      console.log("Test Facebook");
+      console.log("Test Google");
       console.log(profile);
       console.log(profile.emails[0].value);
       console.log(token);
-      return pool.query("SELECT add_membre($1, NULL, $2, $3, NULL, NULL, NULL, NULL, NULL, \'membre\', 2)",
+      return pool.query("SELECT add_membre($1, NULL, $2, $3, $4, NULL, NULL, NULL, NULL, NULL, \'Membre\', 2)",
       [profile.emails[0].value,
+      profile.photos[0].value,
       profile.name.familyName,
       profile.name.givenName])
       .then((result)=>{
