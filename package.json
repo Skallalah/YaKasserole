@@ -23,6 +23,11 @@
     "passport-facebook": "*",
     "passport-google-oauth": "*",
     "express-session": "*",
-     "connect-flash" : "*"
+    "connect-flash" : "*",
+    "datatables.net": "*",
+    "datatables.net-bs": "*",
+    "datatables.net-responsive": "*",
+    "datatables.net-responsive-bs": "*"
+
   }
 }

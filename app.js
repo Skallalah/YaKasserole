@@ -27,6 +27,8 @@ app.use(express.static(__dirname + '/ressources'));
 app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/'));
 app.use('/bootstrapJS', express.static(__dirname + '/node_modules/bootstrap/js'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
+app.use('/datatable', express.static(__dirname + '/node_modules/datatables.net/js/'));
+app.use('/datatable-net', express.static(__dirname + '/node_modules/datatables.net-bs/'));
 
 // Favicon utilisée
 app.use(favicon(path.join(__dirname,'ressources', 'logo_fav.ico')));
@@ -57,7 +59,6 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash());
 
 // Déclaration de socket pour les requêtes basiques sans POST.
-var io = require('socket.io')(server);
 
 require('./routes/index')(app, passport, pool);
 require('./config/passport')(passport, pool);
