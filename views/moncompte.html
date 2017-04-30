@@ -188,22 +188,7 @@
                     <th>Somme</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>2017-03-11</td>
-                    <td>Abonnement Premium</td>
-                    <td>15,55€</td>
-                  </tr>
-                  <tr>
-                    <td>2018-01-30</td>
-                    <td>Abonnement Premium</td>
-                    <td>21,25€</td>
-                  </tr>
-                  <tr>
-                    <td>2018-02-04</td>
-                    <td>Atelier Sushi</td>
-                    <td>54,10€</td>
-                  </tr>
+                <tbody id="tableTransac">
                 </tbody>
               </table>
             </div>
@@ -214,7 +199,17 @@
   </div>
 
   <script>
-    $(document).ready(function() {
+
+
+      $(document).ready(function() {
+        var nbtransac = <%= transaction.rowCount %>;
+        var transaction = <%- JSON.stringify(transaction.rows) %>;
+        for (var iter = 0; iter < nbtransac; iter++) {
+          var res = "<tr><td>" + transaction[iter].date + "</td>" +
+          "<td>" + transaction[iter].nom + "</td>" +
+          "<td>" + transaction[iter].somme + "</td></tr>";
+          $("#tableTransac").append(res);
+        }
       $('#example').DataTable({
         language: {
         processing:     "Traitement en cours...",
@@ -239,7 +234,7 @@
         }
         }
       });
-    } );
+      });
 
   </script>
 

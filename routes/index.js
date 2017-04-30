@@ -16,7 +16,20 @@ module.exports = function(app, passport, pool) {
 
   app.get('/moncompte', isLoggedIn, function(req, res, next) {
     console.log("mdr");
-    res.render('moncompte.html', { title: 'Mon Compte', user: req.user });
+    pool.query("SELECT to_char(transaction.date, 'YYYY-MM-DD') AS date, nom, somme FROM transaction " +
+              "JOIN atelier ON atelier.id = transaction.id_atelier " +
+              "WHERE transaction.id_compte = $1",
+      [req.user.id])
+    .then((result)=>{
+      console.log(result);
+      res.render('moncompte.html', { title: 'Mon Compte', user: req.user, transaction: result });
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.redirect("/");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+    //res.render('moncompte.html', { title: 'Mon Compte', user: req.user });
   });
 
   app.post('/login', passport.authenticate('local', {
@@ -48,14 +61,6 @@ module.exports = function(app, passport, pool) {
 
   app.post('/signup', function(req, res, next) {
     console.log("signup...");
-    console.log(req.body.email);
-    console.log(req.body.pass);
-    console.log(req.body.nom);
-    console.log(req.body.prenom);
-    console.log(req.body.adresse);
-    console.log(req.body.code);
-    console.log(req.body.pays);
-    console.log(req.body.ville);
     pool.query("SELECT add_membre($1, $2, NULL, $3, $4, $5, $6, \'000000\', $7, $8, \'Membre\', 0)",
       [req.body.email,
       req.body.pass,
