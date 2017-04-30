@@ -86,6 +86,45 @@ module.exports = function(app, passport, pool) {
     })
   });
 
+  app.post('/modification', function(req, res, next) {
+    console.log("signup...");
+    console.log(req.user.id);
+    if (req.body.adresse == "") { req.body.adresse = null; }
+    if (req.body.pays == "") { req.body.pays = null; }
+    if (req.body.ville == "") { req.body.ville = null; }
+    if (req.body.code == "") { req.body.code = null; }
+    if (req.body.numero == "") { req.body.numero = null; }
+    if (req.body.urlimg == "") { req.body.urlimg = null; }
+    console.log(req.body.prenom);
+    console.log(req.body.nom);
+    console.log(req.body.adresse);
+    console.log(req.body.pays);
+    console.log(req.body.ville);
+    console.log(req.body.code);
+    console.log(req.body.numero);
+    console.log(req.body.urlimg);
+    pool.query("UPDATE compte SET prenom = $1, nom = $2, adresse = $3, pays = $4, ville = $5, code_postal = $6, telephone = $7, url_img = $8 " +
+    "WHERE id = $9",
+      [req.body.prenom,
+      req.body.nom,
+      req.body.adresse,
+      req.body.pays,
+      req.body.ville,
+      req.body.code,
+      req.body.numero,
+      req.body.urlimg,
+      req.user.id])
+    .then((result)=>{
+      console.log(result);
+      res.send("success");
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
 // IO SOCKET EXCHANGE ==========================================================
 
 /*io.on('connection', function(socket) {

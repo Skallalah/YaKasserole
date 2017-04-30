@@ -30,6 +30,18 @@
 	background-color: #2a3b60 !important;;
 }
 
+.btn-warning {
+	border-color: transparent;
+  background-color: #dae700 !important;
+  color: #fff !important;
+}
+
+.btn-warning:hover {
+	border-color: transparent;
+  background-color: #a1ab00 !important;
+  color: #fff !important;
+}
+
 .navbar {
 	  height: 50px;
     background-color: #464858;
