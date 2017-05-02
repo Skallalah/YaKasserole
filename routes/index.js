@@ -27,6 +27,27 @@ module.exports = function(app, passport, pool) {
 
   });
 
+  app.get('/mesrecettes', isLoggedIn, function(req, res, next) {
+    console.log("mdr");
+    pool.query("SELECT id, nom, url_img, tmp_prep, count(*) AS nb_aime FROM recette " +
+    "JOIN aimer ON aimer.id_recette = recette.id WHERE recette.id_compte = $1 " +
+    "GROUP BY id, nom, url_img, tmp_prep " +
+    "ORDER BY nb_aime DESC", [req.user.id])
+    .then((result)=>{
+      console.log(result);
+      res.render('mesrecettes.html', { title: 'Recettes', user: req.user, recettes: result });
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.redirect("/");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.get('/editerecette', isLoggedIn, function(req, res, next) {
+    res.render('editerecette.html', { title: 'Création de Recettes', user: req.user });
+  });
+
   app.get('/moncompte', isLoggedIn, function(req, res, next) {
     console.log("mdr");
     pool.query("SELECT to_char(transaction.date, 'YYYY-MM-DD') AS date, CASE WHEN id_atelier ISNULL THEN 'Abonnement Premium' ELSE nom END, somme FROM transaction " +

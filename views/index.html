@@ -151,7 +151,7 @@
               </h2>
               <hr class="featurette-divider">
               <li>
-                <a href="#">Mes recettes</a>
+                <a href="/mesrecettes">Mes recettes</a>
               </li>
               <li>
                 <a href="#">Mon ateliers</a>
@@ -409,7 +409,7 @@
                     $(".slideanim").each(function(){
                       var pos = $(this).offset().top;
                       var winTop = $(window).scrollTop();
-                      if (pos < winTop + 600) {
+                      if (pos < winTop + 400) {
                         $(this).addClass("slideAni");
                       }
                     });

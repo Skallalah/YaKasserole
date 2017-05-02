@@ -67,35 +67,9 @@
     <div id="page-content-wrapper" style="padding: 20px">
       <div class="container-fluid container-main">
         <div class="row">
-          <h1> Nos recettes </h1>
+          <h1> Vos recettes </h1>
         </div>
 
-        <div class="row row-10">
-          <div class="col-md-12">
-            <div>
-              <% if (recettes.rowCount == 0) {%>
-                  <img class="img-responsive" src="https://fakeimg.pl/1920x1080/" alt="first"/>
-              <% } else { %>
-
-                <div>
-                  <div class="recette-container">
-                    <img class="img-responsive image" src="<%= recettes.rows[0].url_img %>">
-                    <div class="middle">
-                      <div class="text-pref">Recette du moment</div>
-                      <div class="text-name-pref"><%= recettes.rows[0].nom %></div>
-                    </div>
-                  </div>
-                </div>
-              <% } %>
-            </div>
-          </div>
-        </div>
-
-        <hr class="featurette-divider">
-
-        <div class="row">
-          <h1> Recherche </h1>
-        </div>
         <div class="row row-10">
           <div class="col-md-6">
 
@@ -149,6 +123,8 @@
             recettes[iter].nb_aime + "</p></div></div></div>";
       $("#recettesTable").append(res);
     }
+    var added = "<div class=\"col-md-3 col-sm-4 col-xs-12\"><a href=\"/editerecette\"><img src=\"/plus.png\" class=\"img-responsive img-circle\" style=\"width: 50%; height: 50%\"></a></div>";
+    $("#recettesTable").append(added);
   </script>
 
   <script>

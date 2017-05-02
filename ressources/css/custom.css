@@ -134,7 +134,7 @@ input[type=text]:focus {
 }
 
 .squared {
-	border-radius: 0px;
+	border-radius: 20px;
 }
 
 .rounded {
@@ -267,3 +267,5 @@ div.dataTables_filter input,
 div.dataTables_length select {
 	border-radius: 0px;
 }
+
+/* Featurette divider changements */
