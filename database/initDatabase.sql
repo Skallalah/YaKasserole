@@ -110,6 +110,7 @@ CREATE TABLE inscrit (
 -- Table: recette
 CREATE TABLE recette (
     id serial  NOT NULL,
+    nom varchar(255) NOT NULL,
     id_compte int  NOT NULL,
     url_img varchar(255)  NULL,
     tmp_prep time  NOT NULL,
@@ -124,8 +125,7 @@ CREATE TABLE transaction (
     id_compte int  NOT NULL,
     id_atelier int  NULL,
     date timestamp  NOT NULL,
-    somme money  NOT NULL,
-    CONSTRAINT transaction_pk PRIMARY KEY (id_compte)
+    somme money  NOT NULL
 );
 
 -- foreign keys

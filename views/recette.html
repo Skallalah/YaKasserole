@@ -97,74 +97,44 @@
           <div class="col-md-3">
             <div class="form-group">
               <select class="form-control squared" id="sel1">
-                <option hidden>Trier par...</option>
-                <option>Temps</option>
                 <option>Approbation</option>
+                <option>Temps</option>
                 <option>Alphabétique</option>
               </select>
             </div>
           </div>
         </div>
-        <div class="row row-10">
+        <div class="row row-10" id="recettesTable">
 
-          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
-            <div class="recette-container">
-              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
-              <div class="middle">
-                <div class="text">Poulet à la marsallah</div>
-                <div class="text-time">40 minutes</div>
-                <p style="color: white; font-size: 1.5em; font-weight: bold; text-align: left;"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> 365</p>
-              </div>
-            </div>
-          </div>
-
-          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
-            <div class="recette-container">
-              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
-              <div class="middle">
-                <div class="text">Pâtes au pesto</div>
-              </div>
-            </div>
-          </div>
-          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
-            <div class="recette-container">
-              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
-              <div class="middle">
-                <div class="text">Boeuf à la Fraise</div>
-              </div>
-            </div>
-          </div>
-          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
-            <div class="recette-container">
-              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
-              <div class="middle">
-                <div class="text">John Doe</div>
-              </div>
-            </div>
-          </div>
-          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
-            <div class="recette-container">
-              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
-              <div class="middle">
-                <div class="text">John Doe</div>
-              </div>
-            </div>
-          </div>
-          <div id="first" class="col-md-3 col-sm-4 col-xs-6">
-            <div class="recette-container">
-              <img class="img-responsive image" src="https://fakeimg.pl/300x300/" alt="first"/>
-              <div class="middle">
-                <div class="text">John Doe</div>
-              </div>
-            </div>
-          </div>
-        <button type="button" class="btn btn-primary" onclick="hideThings()">Primary</button>
       </div>
     </div>
 
 
 
   </div>
+
+  <script>
+    var recettesSize = <%= recettes.rowCount %>;
+    var recettes = <%- JSON.stringify(recettes.rows) %>;
+    for (var iter = 0; iter < recettesSize; iter++) {
+
+      var res = "<div id=\"first\" class=\"col-md-3 col-sm-4 col-xs-6\">" +
+        "<div class=\"recette-container\">" +
+        "<img class=\"img-responsive image\" src=\"";
+      if (recettes[iter].url_img == null) {
+        res = res + "https://fakeimg.pl/300x300/";
+      } else {
+        res = res + recettes[iter].url_img;
+      }
+      res = res + "\"/>" +
+          "<div class=\"middle\">" +
+            "<div class=\"text\">" + recettes[iter].nom + "</div>" +
+            "<div class=\"text-time\">" + recettes[iter].tmp_prep + "</div>" +
+            "<p style=\"color: white; font-size: 1.5em; font-weight: bold; text-align: left;\"><span class=\"glyphicon glyphicon-heart\" aria-hidden=\"true\"></span> " +
+            recettes[iter].nb_aime + "</p></div></div></div>";
+      $("#recettesTable").append(res);
+    }
+  </script>
 
   <script>
   function hideThings() {
