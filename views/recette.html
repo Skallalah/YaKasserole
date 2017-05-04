@@ -67,7 +67,7 @@
     <div id="page-content-wrapper" style="padding: 20px">
       <div class="container-fluid container-main">
         <div class="row">
-          <h1> Nos recettes </h1>
+          <h1>Nos recettes</h1>
         </div>
 
         <div class="row row-10">
@@ -80,7 +80,7 @@
                 <div>
                   <div class="recette-container">
                     <img class="img-responsive image" src="<%= recettes.rows[0].url_img %>">
-                    <div class="middle">
+                    <div class="middle" style="left: 5%">
                       <div class="text-pref">Recette du moment</div>
                       <div class="text-name-pref"><%= recettes.rows[0].nom %></div>
                     </div>
@@ -135,13 +135,13 @@
 
       var res = "<div id=\"first\" class=\"col-md-3 col-sm-4 col-xs-12\">" +
         "<div class=\"recette-container\">" +
-        "<img class=\"img-responsive image\" src=\"";
+        "<a href=\"recettes/" + recettes[iter].id + "\"><img class=\"img-responsive image\" src=\"";
       if (recettes[iter].url_img == null) {
-        res = res + "https://fakeimg.pl/300x300/";
+        res = res + "https://fakeimg.pl/1920x1080/";
       } else {
         res = res + recettes[iter].url_img;
       }
-      res = res + "\"/>" +
+      res = res + "\"/></a>" +
           "<div class=\"middle\">" +
             "<div class=\"text\">" + recettes[iter].nom + "</div>" +
             "<div class=\"text-time\">" + recettes[iter].tmp_prep + "</div>" +

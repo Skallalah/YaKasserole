@@ -387,19 +387,18 @@ On vérifie seulement si le compte n'exsite pas, dans ce cas on renvoie 0
 Exception : 2
 Sinon 1
 */
-CREATE OR REPLACE FUNCTION ADD_RECETTE(name_ VARCHAR(255), url_img_ VARCHAR(255), time_ TIMESTAMP, id_creator_ INT, id_content_ INT)
+CREATE OR REPLACE FUNCTION ADD_RECETTE(nom_ VARCHAR(255), id_compte_ INT, url_img_ VARCHAR(255), tmp_prep_ TIME, nb_personne_ INT)
        RETURNS INT AS
 $$
+DECLARE
+  ret INT;
 BEGIN
-        PERFORM * from compte where compte.id = id_creator_;
-        IF found = FALSE THEN
-          RETURN 0;
-        END IF;
-        INSERT INTO recette (name, likes, url_img, time, id_creator, id_content)
-        VALUES (name_, 0, url_img_, time_, id_creator_, id_content_);
-        RETURN 1;
+        INSERT INTO recette
+        VALUES (DEFAULT, nom_, id_compte_, url_img_, tmp_prep_, nb_personne_, now(), TRUE)
+        RETURNING id INTO ret;
+        RETURN ret;
         EXCEPTION
-        WHEN OTHERS THEN RETURN 2;
+        WHEN OTHERS THEN RETURN -1;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -430,12 +429,12 @@ Exception : 2
 Sinon 1
 */
 
-CREATE OR REPLACE FUNCTION ADD_RECETTE_ETAPE(content_ TEXT)
+CREATE OR REPLACE FUNCTION ADD_RECETTE_ETAPE(n_etape_ INT, id_recette_ INT, contenu_ TEXT)
        RETURNS INT AS
 $$
 BEGIN
-        INSERT INTO recette_etape(content)
-        VALUES (content_);
+        INSERT INTO etape_recette
+        VALUES (id_recette_, n_etape_, contenu_);
         RETURN 1;
         EXCEPTION
         WHEN OTHERS THEN RETURN 2;

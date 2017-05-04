@@ -255,17 +255,35 @@ td {
 }
 
 .pagination>li:last-child>a, .pagination>li:last-child>span {
-    border-radius: 0px;
+		border-top-right-radius: 20px;
+		border-bottom-right-radius: 20px;
 }
 
 .pagination>li:first-child>a, .pagination>li:first-child>span {
-    border-radius: 0px;
+	border-top-left-radius: 20px;
+	border-bottom-left-radius: 20px;
 }
 
 .pagination,
 div.dataTables_filter input,
 div.dataTables_length select {
-	border-radius: 0px;
+	border-radius: 20px;
 }
 
 /* Featurette divider changements */
+
+
+.input-group-addon {
+  border-left-width: 0;
+  border-right-width: 0;
+}
+.input-group-addon:first-child {
+  border-left-width: 1px;
+}
+.input-group-addon:last-child {
+  border-right-width: 1px;
+}
+
+.vresize {
+  resize: vertical;
+}

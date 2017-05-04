@@ -12,7 +12,7 @@ module.exports = function(app, passport, pool) {
   app.get('/recettes', isLoggedIn, function(req, res, next) {
     console.log("mdr");
     pool.query("SELECT id, nom, url_img, tmp_prep, count(*) AS nb_aime FROM recette " +
-    "JOIN aimer ON aimer.id_recette = recette.id " +
+    "LEFT JOIN aimer ON aimer.id_recette = recette.id " +
     "GROUP BY id, nom, url_img, tmp_prep " +
     "ORDER BY nb_aime DESC")
     .then((result)=>{
@@ -30,7 +30,7 @@ module.exports = function(app, passport, pool) {
   app.get('/mesrecettes', isLoggedIn, function(req, res, next) {
     console.log("mdr");
     pool.query("SELECT id, nom, url_img, tmp_prep, count(*) AS nb_aime FROM recette " +
-    "JOIN aimer ON aimer.id_recette = recette.id WHERE recette.id_compte = $1 " +
+    "LEFT JOIN aimer ON aimer.id_recette = recette.id WHERE recette.id_compte = $1 " +
     "GROUP BY id, nom, url_img, tmp_prep " +
     "ORDER BY nb_aime DESC", [req.user.id])
     .then((result)=>{
@@ -151,6 +151,70 @@ module.exports = function(app, passport, pool) {
     .then((result)=>{
       console.log(result);
       res.send("success");
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.post('/ajoutrecette', function(req, res, next) {
+    console.log("signup...");
+    console.log(req.body.json);
+    var text = req.body.json;
+    var recette = JSON.parse(text);
+    var url;
+    if (recette.url_img == "") {
+      url = null;
+    } else {
+      url = recette.url_img;
+    }
+    var time = "00:" + recette.heure + ":" + recette.minutes;
+    pool.query("SELECT ADD_RECETTE($1, $2, $3, $4, $5)",
+      [recette.nom, req.user.id, url, time, recette.nb_personnes])
+    .then((result)=>{
+      console.log(result);
+      var id = result.rows[0].add_recette;
+      console.log("EXAMPLE : " + recette.etapes[0] + " id : " + id);
+      pool.query("SELECT ADD_RECETTE_ETAPE(0, $1, $2)",
+        [id, recette.etapes[0]])
+        .catch((err)=>{
+          res.send("error");
+        });
+
+        for (var tmp = 1; tmp < recette.etapes.length; tmp++) {
+          pool.query("SELECT ADD_RECETTE_ETAPE($1, $2, $3)",
+            [tmp, id, recette.etapes[tmp]])
+            .catch((err)=>{
+              res.send("error");
+            });
+        }
+        res.send("success");
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.get('/recettes/:id_recette', isLoggedIn, function(req, res, next) {
+    pool.query("SELECT * FROM recette WHERE id = $1",
+      [req.params.id_recette])
+    .then((recette)=>{
+      if (recette.rowCount == 0) {
+        var err = new Error('Not Found');
+        err.status = 404;
+        next(err);
+      }
+      console.log(recette);
+      pool.query("SELECT * FROM etape_recette WHERE id_recette = $1 ORDER BY n_etape ASC",
+        [req.params.id_recette])
+      .then((etapes)=>{
+        console.log(etapes);
+        res.render('recettedetail.html', { title: 'Création de Recettes', user: req.user, recette_info: recette, recette_etapes: etapes });
+      })
     })
     .catch((err)=>{
       console.log(err);

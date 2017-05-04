@@ -1,5 +1,6 @@
 <% include layout.html %>
 <link rel="stylesheet" type="text/css" href="/css/recette.css">
+<link rel="stylesheet" type="text/css" href="/css/wizard.css">
 </head>
 <body>
 
@@ -64,36 +65,29 @@
         </li>
       </ul>
     </div>
-    <div id="page-content-wrapper" style="padding: 20px">
+    <div id="page-content-wrapper">
+      <img src="<% if (recette_info.rows[0].url_img == null) {%>
+                    https://fakeimg.pl/1920x1080/
+                  <% } else { %>
+                    <%= recette_info.rows[0].url_img %>
+                <% } %>" class="img-responsive center-block">
       <div class="container-fluid container-main">
+        <h1><%= recette_info.rows[0].nom %></h1>
         <div class="row">
-          <h1> Vos recettes </h1>
-        </div>
-
-        <div class="row row-10">
           <div class="col-md-6">
-
-            <div class="input-group">
-              <input type="text" class="form-control squared" placeholder="Rechercher...">
-              <div class="input-group-btn">
-                <button class="btn btn-default squared" type="submit">
-                  <i class="glyphicon glyphicon-search"></i>
-                </button>
-              </div>
-            </div>
-
+            <h2>Pour <%= recette_info.rows[0].nb_personne %> personnes</h2>
           </div>
-          <div class="col-md-3">
-            <div class="form-group">
-              <select class="form-control squared" id="sel1">
-                <option>Approbation</option>
-                <option>Temps</option>
-                <option>Alphabétique</option>
-              </select>
-            </div>
+          <div class="col-md-6">
+            <button type="button" class="btn btn-primary pull-right squared"><span class="glyphicon glyphicon-heart"></span> J'aime</button>
           </div>
         </div>
-        <div class="row row-10" id="recettesTable">
+        <hr class="featurette-divider">
+        <div id="etapes">
+          <div class="panel panel-default">
+            <div class="panel-heading">Ingrédients</div>
+            <div class="panel-body"><%- recette_etapes.rows[0].contenu.replace(/(?:\r\n|\r|\n)/g, '<br />'); %></div>
+          </div>
+          <hr class="featurette-divider">
 
       </div>
     </div>
@@ -103,28 +97,14 @@
   </div>
 
   <script>
-    var recettesSize = <%= recettes.rowCount %>;
-    var recettes = <%- JSON.stringify(recettes.rows) %>;
-    for (var iter = 0; iter < recettesSize; iter++) {
-
-      var res = "<div id=\"first\" class=\"col-md-3 col-sm-4 col-xs-12\">" +
-        "<div class=\"recette-container\">" +
-        "<img class=\"img-responsive image\" src=\"";
-      if (recettes[iter].url_img == null) {
-        res = res + "https://fakeimg.pl/1920x1080/";
-      } else {
-        res = res + recettes[iter].url_img;
-      }
-      res = res + "\"/>" +
-          "<div class=\"middle\">" +
-            "<div class=\"text\">" + recettes[iter].nom + "</div>" +
-            "<div class=\"text-time\">" + recettes[iter].tmp_prep + "</div>" +
-            "<p style=\"color: white; font-size: 1.5em; font-weight: bold; text-align: left;\"><span class=\"glyphicon glyphicon-heart\" aria-hidden=\"true\"></span> " +
-            recettes[iter].nb_aime + "</p></div></div></div>";
-      $("#recettesTable").append(res);
+    var nb = <%= recette_etapes.rowCount %>;
+    var recette = <%- JSON.stringify(recette_etapes.rows) %>;
+    for (var tmp = 1; tmp < nb; tmp++) {
+      var res = "<div class=\"panel panel-default\">" +
+                "<div class=\"panel-heading\">Etape " + tmp + "</div>" +
+                "<div class=\"panel-body\">" + recette[tmp].contenu.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</div></div>";
+      $( "#etapes" ).append( res );
     }
-    var added = "<div class=\"col-md-3 col-sm-4 col-xs-12\"><a href=\"/editerecette\"><img src=\"/plus.png\" class=\"img-responsive img-circle\" style=\"width: 50%; height: 50%\"></a></div>";
-    $("#recettesTable").append(added);
   </script>
 
   <script>
