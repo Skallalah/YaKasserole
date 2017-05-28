@@ -94,7 +94,7 @@
                     </a>
                   </li>
                   <li role="presentation" class="disabled">
-                    <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Etapes de la recette">
+                    <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Informations sur l'atelier">
                       <span class="round-tab">
                         <i class="glyphicon glyphicon-picture"></i>
                       </span>
@@ -122,18 +122,18 @@
                       <div class="col-md-7">
 
                         <div class="form-group">
-                          <label for="imgRecette">URL de l'image</label>
+                          <label for="imgAtelier">URL de l'image</label>
                           <div class="input-group">
                             <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-link"></i></span>
-                            <input type="text" class="form-control squared" id="imgRecette" value="">
+                            <input type="text" class="form-control squared" id="imgAtelier" value="">
                           </div>
                         </div>
 
                         <div class="form-group">
-                          <label for="nomRecette">Nom de la recette</label>
+                          <label for="nomAtelier">Nom de l'atelier</label>
                           <div class="input-group">
                             <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-pencil"></i></span>
-                            <input type="text" class="form-control squared" id="nomRecette" value="">
+                            <input type="text" class="form-control squared" id="nomAtelier" value="">
                           </div>
                         </div>
 
@@ -151,30 +151,89 @@
                       <div class="col-md-12">
 
                         <div class="form-group">
-                          <label for="imgRecette">Temps de préparation</label>
+                          <label for="imgAtelier">Jour de l'atelier</label>
                           <div class="input-group">
-                            <span class="input-group-addon squared">Heures</span>
-                            <input type="text" class="form-control" id="inputHeure"/>
-                            <span class="input-group-addon" style="border-left: 0; border-right: 0;">Minutes</span>
-                            <input type="text" class="form-control squared" id="inputMinute">
+                            <span class="input-group-addon squared">Jour</span>
+                            <input type="text" class="form-control" id="inputJour"/>
+                            <span class="input-group-addon" style="border-left: 0; border-right: 0;">Mois</span>
+                            <input type="text" class="form-control squared" id="inputMois">
+                            <span class="input-group-addon" style="border-left: 0; border-right: 0;">Année</span>
+                            <input type="text" class="form-control squared" id="inputAnnée">
                           </div>
                         </div>
 
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="imgAtelier">Heure de début</label>
+                              <div class="input-group">
+                                <input type="text" class="form-control squared" id="inputHeureDébut"/>
+                                <span class="input-group-addon" style="border-left: 0; border-right: 0;">h</span>
+                                <input type="text" class="form-control squared" id="inputMinuteDébut">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="imgAtelier">Durée de l'atelier</label>
+                              <div class="input-group">
+                                <span class="input-group-addon squared">Heures</span>
+                                <input type="text" class="form-control" id="inputHeure"/>
+                                <span class="input-group-addon" style="border-left: 0; border-right: 0;">Minutes</span>
+                                <input type="text" class="form-control squared" id="inputMinute">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
                         <div class="form-group">
-                          <label for="nomRecette">Nombre de personne</label>
+                          <label for="nomAtelier">Nombre de personne</label>
                           <div class="input-group">
                             <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-user"></i></span>
-                            <input type="text" class="form-control squared" id="perRecette" value="">
+                            <input type="text" class="form-control squared" id="perAtelier" value="">
                           </div>
                         </div>
 
-                        <div class="form-group">
-                          <label for="nomRecette">Ingrédients</label>
-                          <div class="input-group">
-                            <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-menu-right"></i></span>
-                            <textarea class="form-control vresize squared" rows="5" id="ingredients"></textarea>
+                        <div class="row">
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="nomAtelier">Adresse</label>
+                              <div class="input-group">
+                                <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-home"></i></span>
+                                <input type="text" class="form-control squared" id="adresseAtelier" value="">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="nomAtelier">Pays</label>
+                              <div class="input-group">
+                                <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-home"></i></span>
+                                <input type="text" class="form-control squared" id="paysAtelier" value="">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="nomAtelier">Ville</label>
+                              <div class="input-group">
+                                <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-home"></i></span>
+                                <input type="text" class="form-control squared" id="villeAtelier" value="">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="nomAtelier">Code postal</label>
+                              <div class="input-group">
+                                <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-home"></i></span>
+                                <input type="text" class="form-control squared" id="codeAtelier" value="">
+                              </div>
+                            </div>
                           </div>
                         </div>
+
 
 
                       </div>
@@ -186,38 +245,23 @@
                     </ul>
                   </div>
                   <div class="tab-pane" role="tabpanel" id="step3">
-                    <h2>Etapes de la recette</h2>
+                    <h2>Informations sur l'atelier</h2>
 
                     <div class="row">
                       <div id="etapes">
 
                         <div class="form-group">
-                          <div class="input-group">
-                            <span class="input-group-addon squared">Etape 1</span>
-                            <textarea class="form-control vresize squared" rows="5" id="etape1"></textarea>
-                          </div>
+                          <textarea class="form-control vresize squared" rows="10" id="infosAtelier"></textarea>
                         </div>
 
                         <div class="form-group">
+                          <label for="nomAtelier">Coût de l'atelier</label>
                           <div class="input-group">
-                            <span class="input-group-addon squared">Etape 2</span>
-                            <textarea class="form-control vresize squared" rows="5" id="etape2"></textarea>
+                            <input type="text" class="form-control squared" id="prixAtelier" value="">
+                            <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-euro"></i></span>
                           </div>
                         </div>
 
-                        <div class="form-group">
-                          <div class="input-group">
-                            <span class="input-group-addon squared">Etape 3</span>
-                            <textarea class="form-control vresize squared" rows="5" id="etape3"></textarea>
-                          </div>
-                        </div>
-
-                      </div>
-                      <div class="text-center">
-                        <div class="btn-group">
-                          <button type="button" class="btn btn-default squared" onclick="supprimer_etape()" id="buttonSuppr"><span class="glyphicon glyphicon-minus"></span></button>
-                          <button type="button" class="btn btn-default squared" onclick="ajout_etape()" id="buttonAjout"><span class="glyphicon glyphicon-plus"></span></button>
-                        </div>
                       </div>
                     </div>
 
@@ -228,8 +272,8 @@
                     </ul>
                   </div>
                   <div class="tab-pane" role="tabpanel" id="complete">
-                    <h3>Recette prête!</h3>
-                    <p>Vous avez remplis toutes les étapes. Il ne reste plus qu'à la poster!</p>
+                    <h3>Atelier prêt!</h3>
+                    <p>Vous avez remplis toutes les étapes. Il ne reste plus qu'à l'a poster!</p>
                     <hr class="featurette-divider">
                     <ul class="list-inline pull-right">
                       <li><button type="button" class="btn btn-primary btn-info-full next-step squared" onclick="envoi_recette()" id="envoi">Valider</button></li>
@@ -325,33 +369,6 @@
   </script>
 
   <script>
-    function ajout_etape() {
-      var nb_etape_ac = $('#etapes').children().length;
-      if (nb_etape_ac >= 20) { return; }
-      if (nb_etape_ac <= 0) { $("#buttonSuppr").toggleClass("disabled"); }
-      var res = "<div class=\"form-group\">" +
-                "<div class=\"input-group\">" +
-                "<span class=\"input-group-addon squared\">Etape " + (nb_etape_ac + 1) + "</span>" +
-                "<textarea class=\"form-control vresize squared\" rows=\"5\" id=\"etape" + (nb_etape_ac + 1) + "\"></textarea>" +
-                "</div></div>";
-      $("#etapes").append(res);
-      if (nb_etape_ac + 1 >= 20) {
-        $("#buttonAjout").toggleClass("disabled");
-      }
-    }
-
-    function supprimer_etape() {
-      var nb_etape_ac = $('#etapes').children().length;
-      if (nb_etape_ac <= 0) { return; }
-      if (nb_etape_ac >= 20) { $("#buttonAjout").toggleClass("disabled"); }
-      $("#etapes").children().last().remove();
-      if (nb_etape_ac - 1 <= 0) {
-        $("#buttonSuppr").toggleClass("disabled");
-      }
-    }
-  </script>
-
-  <script>
     function escapeHtml(text) {
       var map = {
         '&': '&amp;',
@@ -367,24 +384,46 @@
     function envoi_recette() {
       $("#envoi").prop('disabled', true);
       var result = {};
-      result.url_img = escapeHtml(document.getElementById("imgRecette").value);
-      result.nom = escapeHtml(document.getElementById("nomRecette").value);
+      result.url_img = escapeHtml(document.getElementById("imgAtelier").value);
+      result.nom = escapeHtml(document.getElementById("nomAtelier").value);
+      var heure = "";
+      var minute = "";
+      var heureD = "";
+      var minuteD = "";
       if (document.getElementById("inputHeure").value == "") {
-        result.heure = 0;
+        heure = "0";
       } else {
-        result.heure = escapeHtml(document.getElementById("inputHeure").value);
+        heure = escapeHtml(document.getElementById("inputHeure").value);
       }
-      result.minutes = escapeHtml(document.getElementById("inputMinute").value);
-      result.nb_personnes = escapeHtml(document.getElementById("perRecette").value);
-      result.etapes = new Array();
-      result.etapes[result.etapes.length] = escapeHtml(document.getElementById("ingredients").value);
-      var nb_etape_ac = $('#etapes').children().length;
-      for (var tmp = 1; tmp <= nb_etape_ac; tmp++) {
-        var value = "etape" + tmp;
-        result.etapes[result.etapes.length] = escapeHtml(document.getElementById(value).value);
+      if (document.getElementById("inputMinute").value == "") {
+        minute = "0";
+      } else {
+        minute = escapeHtml(document.getElementById("inputMinute").value);
       }
+      if (document.getElementById("inputHeureDébut").value == "") {
+        heureD = "0";
+      } else {
+        heureD = escapeHtml(document.getElementById("inputHeureDébut").value);
+      }
+      if (document.getElementById("inputMinuteDébut").value == "") {
+        minuteD = "0";
+      } else {
+        minuteD = escapeHtml(document.getElementById("inputMinuteDébut").value);
+      }
+      result.date = "" + document.getElementById("inputAnnée").value + "-" +
+                    document.getElementById("inputMois").value + "-" +
+                    document.getElementById("inputJour").value + " 00:" +
+                    heureD + ":" + minuteD;
+      result.duree = "00:" + heure + ":" + minute;
+      result.nb_personnes = escapeHtml(document.getElementById("perAtelier").value);
+      result.informations = escapeHtml(document.getElementById("infosAtelier").value);
+      result.ville = escapeHtml(document.getElementById("villeAtelier").value);
+      result.adresse = escapeHtml(document.getElementById("adresseAtelier").value);
+      result.pays = escapeHtml(document.getElementById("paysAtelier").value);
+      result.code_postal = escapeHtml(document.getElementById("codeAtelier").value);
+      result.prix = escapeHtml(document.getElementById("prixAtelier").value);
       //alert(JSON.stringify(result));
-      $.post("/ajoutrecette",
+      $.post("/ajoutatelier",
       {
         json: JSON.stringify(result)
       },
@@ -392,7 +431,7 @@
         $("#envoi").prop('disabled', false);
         console.log(data);
         if (data == 'success') {
-          $(location).attr("href", "/mesrecettes");
+          $(location).attr("href", "/mesateliers");
         }
         else {
           alert("Erreur");

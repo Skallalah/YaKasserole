@@ -62,6 +62,7 @@
             </li>
           <% } %>
         <% } %>
+        </li>
         <li>
           <a href="/moncompte">Mon profil</a>
         </li>
@@ -73,11 +74,7 @@
     <div id="page-content-wrapper" style="padding: 20px">
       <div class="container-fluid container-main">
         <div class="row">
-          <h1>Nos ateliers</h1>
-        </div>
-
-        <div class="row">
-          <h1> Recherche </h1>
+          <h1>Vos ateliers</h1>
         </div>
         <div class="row row-10">
           <div class="col-md-6">
@@ -157,7 +154,10 @@
       "<p>" + ateliers[iter].informations + "</p>" +
       "</div></div></div></div></div></div>";
       $("#gridContent").append(res);
+
     }
+    var added = "<div class=\"col-md-3 col-sm-4 col-xs-12\"><a href=\"/editeatelier\"><img src=\"/plus.png\" class=\"img-responsive img-circle\" style=\"width: 50%; height: 50%\"></a></div>";
+    $("#gridContent").append(added);
   </script>
 
   <script>
@@ -212,6 +212,8 @@
         $("#searchButton").prop('disabled', false);
         $("#loader").toggleClass("hidden");
       });
+      var added = "<div class=\"col-md-3 col-sm-4 col-xs-12\"><a href=\"/editeatelier\"><img src=\"/plus.png\" class=\"img-responsive img-circle\" style=\"width: 50%; height: 50%\"></a></div>";
+      $("#gridContent").append(added);
     }
   </script>
 

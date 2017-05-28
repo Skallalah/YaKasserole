@@ -10,6 +10,17 @@
   color: #fff !important;
 }
 
+.btn-secondary {
+	border-color: transparent;
+  color: #fff !important;
+}
+
+.btn-secondary:hover {
+	border-color: transparent;
+	background-color: #bfbfbf !important;
+  color: #fff !important;
+}
+
 .btn-success {
 	border-color: transparent;
 	background-color: #D34836 !important;;

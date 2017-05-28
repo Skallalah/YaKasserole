@@ -53,9 +53,13 @@
         <li>
           <a href="/mesrecettes">Mes recettes</a>
         </li>
-        <li>
-          <a href="#">Mon ateliers</a>
-        </li>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Chef") { %>
+            <li>
+              <a href="/mesateliers">Mes ateliers</a>
+            </li>
+          <% } %>
+        <% } %>
         <li>
           <a href="/moncompte">Mon profil</a>
         </li>

@@ -51,6 +51,7 @@ CREATE TABLE aimer (
 -- Table: atelier
 CREATE TABLE atelier (
     id serial  NOT NULL,
+    id_compte INT NOT NULL,
     nom varchar(255)  NOT NULL,
     date timestamp  NOT NULL,
     duree time  NOT NULL,
@@ -211,6 +212,12 @@ ALTER TABLE transaction ADD CONSTRAINT transaction_compte
     INITIALLY IMMEDIATE
 ;
 
+ALTER TABLE atelier ADD CONSTRAINT atelier_compte
+    FOREIGN KEY (id_compte)
+    REFERENCES compte (id)
+    NOT DEFERRABLE
+    INITIALLY IMMEDIATE
+;
 
 /*
                       GET STATUS
@@ -306,7 +313,7 @@ On vérifie si l'id du creator n'existe pas : 0
 Exception : 2
 Sinon 1
 */
-CREATE OR REPLACE FUNCTION ADD_ATELIER(id_creator_ INT, url_img_ VARCHAR(255), price_ NUMERIC, nb_max_ INT)
+CREATE OR REPLACE FUNCTION ADD_ATELIER(id_creator_ INT, nom_ VARCHAR(255), date_ timestamp, duree_ time, url_img_ VARCHAR(255), nb_personne_ int, informations_ text, ville_ VARCHAR(255), adresse_ VARCHAR(255), pays_ VARCHAR(255), code_ int, prix_ money)
        RETURNS INT AS
 $$
 BEGIN
@@ -314,8 +321,8 @@ BEGIN
         IF found = FALSE THEN
           RETURN 0;
         END IF;
-        INSERT INTO atelier(id_creator, url_img, price, nb_max)
-        VALUES (id_creator_, url_img_, price_, nb_max_);
+        INSERT INTO atelier
+        VALUES (DEFAULT, id_creator_, nom_, date_, duree_, url_img_, nb_personne_, informations_, ville_, adresse_, pays_, code_, TRUE, prix_);
         RETURN 1;
         EXCEPTION
         WHEN OTHERS THEN RETURN 2;
@@ -342,8 +349,41 @@ BEGIN
         IF found = FALSE THEN
           RETURN 0;
         END IF;
-        INSERT INTO comment(id_recette, id_member, content)
-        VALUES (id_recette_, id_member_, content_);
+        INSERT INTO commentaire
+        VALUES (DEFAULT, id_member_, id_recette_, content_);
+        RETURN 1;
+        EXCEPTION
+        WHEN OTHERS THEN RETURN 2;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION REMOVE_COMMENT(id_comment_ int, id_compte_ int)
+       RETURNS INT AS
+$$
+BEGIN
+        PERFORM * from commentaire where id_compte = id_compte_ and id = id_comment_;
+        IF found = FALSE THEN
+          RETURN 0;
+        END IF;
+        DELETE FROM commentaire
+        WHERE id = id_comment_;
+        RETURN 1;
+        EXCEPTION
+        WHEN OTHERS THEN RETURN 2;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION UPDATE_COMMENT(id_comment_ int, id_compte_ int, content_ text)
+       RETURNS INT AS
+$$
+BEGIN
+        PERFORM * from commentaire where id_compte = id_compte_ and id = id_comment_;
+        IF found = FALSE THEN
+          RETURN 0;
+        END IF;
+        UPDATE commentaire
+        SET contenu = content_
+        WHERE id = id_comment_;
         RETURN 1;
         EXCEPTION
         WHEN OTHERS THEN RETURN 2;
@@ -437,6 +477,30 @@ $$
 BEGIN
         INSERT INTO etape_recette
         VALUES (id_recette_, n_etape_, contenu_);
+        RETURN 1;
+        EXCEPTION
+        WHEN OTHERS THEN RETURN 2;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION ADD_AIME(id_compte_ INT, id_recette_ INT)
+       RETURNS INT AS
+$$
+BEGIN
+        INSERT INTO aimer
+        VALUES (id_compte_, id_recette_);
+        RETURN 1;
+        EXCEPTION
+        WHEN OTHERS THEN RETURN 2;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION REMOVE_AIME(id_compte_ INT, id_recette_ INT)
+       RETURNS INT AS
+$$
+BEGIN
+        DELETE FROM aimer
+        WHERE id_compte = id_compte_ AND id_recette_ = id_recette;
         RETURN 1;
         EXCEPTION
         WHEN OTHERS THEN RETURN 2;

@@ -54,9 +54,13 @@
         <li>
           <a href="/mesrecettes">Mes recettes</a>
         </li>
-        <li>
-          <a href="#">Mon ateliers</a>
-        </li>
+        <% if (typeof user != 'undefined') { %>
+          <% if (user.status == "Chef") { %>
+            <li>
+              <a href="/mesateliers">Mes ateliers</a>
+            </li>
+          <% } %>
+        <% } %>
         <li>
           <a href="/moncompte">Mon profil</a>
         </li>
@@ -78,7 +82,11 @@
             <h2>Pour <%= recette_info.rows[0].nb_personne %> personnes</h2>
           </div>
           <div class="col-md-6">
-            <button type="button" class="btn btn-primary pull-right squared"><span class="glyphicon glyphicon-heart"></span> J'aime</button>
+            <% if (aimer == "0") {%>
+              <button type="button" class="btn btn-primary pull-right squared" onclick="love()"><span class="glyphicon glyphicon-heart"></span> J'aime</button>
+            <% } else { %>
+              <button type="button" class="btn btn-secondary pull-right squared" onclick="notlove()"><span class="glyphicon glyphicon-heart"></span> Je n'aime plus</button>
+            <% } %>
           </div>
         </div>
         <hr class="featurette-divider">
@@ -91,14 +99,14 @@
 
       </div>
       <hr class="featurette-divider">
-      
+
       <div class="row row-10" id="comment">
       </div>
 
       <div class="row row-10">
         <h2>Donnez votre avis<h2>
         <textarea class="form-control vresize squared" rows="5" id="textcomment"></textarea>
-        <button type="button" class="btn btn-primary squared">Confirmer</button>
+        <button type="button" class="btn btn-primary squared" onclick="creer()">Confirmer</button>
       </div>
 
       <hr class="featurette-divider">
@@ -131,17 +139,19 @@
       } else {
         res = res + comments[iter].url_img;
       }
-          res = res + "\" class=\"media-object\" style=\"width:60px\">" +
+          res = res + "\" class=\"media-object img-circle\" style=\"width:60px\">" +
         "</div><div class=\"media-body\">" +
           "<h4 class=\"media-heading\">" + comments[iter].prenom + " " + comments[iter].nom + "</h4>" +
           "<div id=\"contenu" + comments[iter].id + "\">" +
             "<p id=\"text" + comments[iter].id +"\">" + comments[iter].contenu + "</p>" +
           "</div>" +
-        "</div>" +
-        "<div class=\"media-footer pull-right\" id=\"footer" + comments[iter].id + "\">" +
-          "<button type=\"button\" class=\"btn-primary squared\" onclick=\"editer(" + comments[iter].id + ")\">Editer</button>" +
-          "\n<button type=\"button\" class=\"btn-primary squared\" onclick=\"supprimer(" + comments[iter].id + ")\">Supprimer</button>" +
-        "</div></div>";
+        "</div>";
+        if (comments[iter].id_compte == <%= user.id %>) {
+          res = res + "<div class=\"media-footer pull-right\" id=\"footer" + comments[iter].id + "\">" +
+            "<button type=\"button\" class=\"btn-primary squared\" onclick=\"editer(" + comments[iter].id + ")\">Editer</button>" +
+            "\n<button type=\"button\" class=\"btn-primary squared\" onclick=\"supprimer(" + comments[iter].id + ")\">Supprimer</button>" +
+          "</div></div>";
+        }
       $( "#comment" ).append( res );
     }
   </script>
@@ -151,6 +161,64 @@
       document.getElementById("contenu" + id).innerHTML = "<textarea class=\"form-control vresize squared\" rows=\"3\" id=\"edite" + id + "\">" +
       document.getElementById("text" + id).innerHTML + "</textarea>";
       document.getElementById("footer" + id).innerHTML = "<button type=\"button\" class=\"btn-primary squared\" style=\"margin-top: 10px\" onclick=\"modify(" + id + ")\">Confirmer</button>";
+    }
+
+    function modify(id) {
+      if (document.getElementById("edite" + id).value == "") {
+        supprimer(id);
+      } else {
+        $.post('/editecommentaire',
+        {
+          text: document.getElementById("edite" + id).value,
+          idcomment: id
+        }, function()
+        {
+          location.reload();
+        });
+      }
+    }
+
+    function supprimer(id) {
+      $.post('/supprimecommentaire',
+      {
+        idcomment: id
+      }, function()
+      {
+        location.reload();
+      });
+    }
+
+    function creer() {
+      if (document.getElementById("textcomment").value != "") {
+        $.post('/creercommentaire',
+        {
+          text: document.getElementById("textcomment").value,
+          idrecette: <%= recette_info.rows[0].id %>
+        }, function()
+        {
+          location.reload();
+        });
+      }
+    }
+
+    function love() {
+      $.post('/aimerrecette',
+      {
+        idrecette: <%= recette_info.rows[0].id %>
+      }, function()
+      {
+        location.reload();
+      });
+    }
+
+    function notlove() {
+      $.post('/plusaimerrecette',
+      {
+        idrecette: <%= recette_info.rows[0].id %>
+      }, function()
+      {
+        location.reload();
+      });
     }
   </script>
 

@@ -51,6 +51,65 @@ module.exports = function(app, passport, pool) {
 
   });
 
+  app.get('/mesateliers', isLoggedIn, function(req, res, next) {
+    console.log("mdr");
+    pool.query("SELECT id," +
+	              "nom,"+
+	              "to_char(date, 'DD-MM-YYYY') as date,"+
+	              "to_char(date, 'HH24hMI') as debut,"+
+	              "to_char((date + duree), 'HH24hMI') as fin,"+
+	              "url_img,"+
+	              "informations,"+
+	              "ville,"+
+	              "adresse, prix from atelier "+
+                "where id_compte = $1 "+
+    "ORDER BY id DESC", [req.user.id])
+    .then((result)=>{
+      console.log(result);
+      res.render('mesateliers.html', { title: 'Mes Ateliers', user: req.user, ateliers: result });
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.redirect("/");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+
+  });
+
+  app.post('/recherchemesateliers', function(req, res, next) {
+    console.log("recherche mes atelier...");
+    var comp = "";
+    var word = "%" + req.body.text + "%";
+    if (req.body.ordre == "Prix") {
+      comp = "prix";
+    } else if (req.body.ordre == "Temps") {
+      comp = "duree";
+    } else {
+      comp = "nom";
+    }
+    console.log(comp);
+    pool.query("SELECT id," +
+	              "nom,"+
+	              "to_char(date, 'DD-MM-YYYY') as date,"+
+	              "to_char(date, 'HH24hMI') as debut,"+
+	              "to_char((date + duree), 'HH24hMI') as fin,"+
+	              "url_img,"+
+	              "informations,"+
+	              "ville,"+
+	              "adresse, prix from atelier "+
+                "WHERE lower(nom) LIKE $1 AND id_compte = $2 " +
+                "ORDER BY " + comp + " DESC", [word, req.user.id])
+    .then((result)=>{
+      console.log(result);
+      res.send(result);
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
   app.post('/rechercheatelier', function(req, res, next) {
     console.log("recherche atelier...");
     var comp = "";
@@ -134,6 +193,10 @@ module.exports = function(app, passport, pool) {
 
   app.get('/editerecette', isLoggedIn, function(req, res, next) {
     res.render('editerecette.html', { title: 'Création de Recettes', user: req.user });
+  });
+
+  app.get('/editeatelier', isLoggedIn, function(req, res, next) {
+    res.render('editeatelier.html', { title: 'Création d\'Ateliers', user: req.user });
   });
 
   app.get('/moncompte', isLoggedIn, function(req, res, next) {
@@ -287,6 +350,50 @@ module.exports = function(app, passport, pool) {
     })
   });
 
+  app.post('/ajoutatelier', function(req, res, next) {
+    console.log("signup...");
+    console.log(req.body.json);
+    var text = req.body.json;
+    var atelier = JSON.parse(text);
+    var url;
+    if (atelier.url_img == "") {
+      url = null;
+    } else {
+      url = atelier.url_img;
+    }
+    console.log(atelier.nom);
+    console.log(atelier.date);
+    console.log(atelier.duree);
+    console.log(atelier.nb_personnes);
+    console.log(atelier.informations);
+    console.log(atelier.ville);
+    console.log(atelier.adresse);
+    console.log(atelier.pays);
+    console.log(atelier.code_postal);
+    console.log(atelier.prix);
+    pool.query("SELECT ADD_ATELIER($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+      [req.user.id,
+      atelier.nom,
+      atelier.date,
+      atelier.duree,
+      url,
+      atelier.nb_personnes,
+      atelier.informations,
+      atelier.ville,
+      atelier.adresse,
+      atelier.pays,
+      atelier.code_postal,
+      atelier.prix])
+    .then((result)=>{
+      res.send("success");
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
   app.get('/recettes/:id_recette', isLoggedIn, function(req, res, next) {
     pool.query("SELECT * FROM recette WHERE id = $1",
       [req.params.id_recette])
@@ -301,16 +408,91 @@ module.exports = function(app, passport, pool) {
         [req.params.id_recette])
       .then((etapes)=>{
         console.log(etapes);
-        pool.query("select commentaire.id, prenom, nom, url_img, contenu from commentaire " +
+        pool.query("select commentaire.id, prenom, nom, id_compte, url_img, contenu from commentaire " +
                   "join compte on id_compte = compte.id " +
                   "where id_recette = $1 " +
                   "order by commentaire.id ASC",
           [req.params.id_recette])
           .then((commentaire)=>{
             console.log(commentaire);
-            res.render('recettedetail.html', { title: 'Création de Recettes', user: req.user, recette_info: recette, recette_etapes: etapes, commentaires: commentaire });
+            pool.query("select * from aimer where id_recette = $1 and id_compte = $2",
+              [req.params.id_recette, req.user.id])
+            .then((aime)=>{
+              res.render('recettedetail.html', { title: 'Création de Recettes', user: req.user, recette_info: recette, recette_etapes: etapes, commentaires: commentaire, aimer: aime.rowCount });
+            })
           })
       })
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.post('/supprimecommentaire', function(req, res, next) {
+    console.log("Supprimer commentaire...");
+    pool.query("SELECT REMOVE_COMMENT($1, $2)",
+      [req.body.idcomment, req.user.id])
+    .then((result)=>{
+      res.send("success");
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.post('/creercommentaire', function(req, res, next) {
+    console.log("Ajouter commentaire...");
+    pool.query("SELECT ADD_COMMENT($1, $2, $3)",
+      [req.body.idrecette, req.user.id, req.body.text])
+    .then((result)=>{
+      console.log(result);
+      res.send("success");
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.post('/editecommentaire', function(req, res, next) {
+    console.log("Modifier commentaire...");
+    pool.query("SELECT UPDATE_COMMENT($1, $2, $3)",
+      [req.body.idcomment, req.user.id, req.body.text])
+    .then((result)=>{
+      res.send("success");
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.post('/aimerrecette', function(req, res, next) {
+    console.log("Ajouter un j'aime...");
+    pool.query("SELECT ADD_AIME($1, $2)",
+      [req.user.id, req.body.idrecette])
+    .then((result)=>{
+      res.send("success");
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.post('/plusaimerrecette', function(req, res, next) {
+    console.log("Enlever l'aime...");
+    pool.query("SELECT REMOVE_AIME($1, $2)",
+      [req.user.id, req.body.idrecette])
+    .then((result)=>{
+      res.send("success");
     })
     .catch((err)=>{
       console.log(err);
