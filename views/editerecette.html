@@ -20,7 +20,7 @@
         <ul class="nav navbar-nav">
           <li><a href="/recettes">Recettes</a></li>
           <li role="separator" class="divider"></li>
-          <li><a href="#">Ateliers</a></li>
+          <li><a href="/ateliers">Ateliers</a></li>
         </ul>
 
         <ul class="nav navbar-nav navbar-right">
@@ -348,26 +348,38 @@
   </script>
 
   <script>
+    function escapeHtml(text) {
+      var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+
+      return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
     function envoi_recette() {
       $("#envoi").prop('disabled', true);
       var result = {};
-      result.url_img = document.getElementById("imgRecette").value;
-      result.nom = document.getElementById("nomRecette").value;
+      result.url_img = escapeHtml(document.getElementById("imgRecette").value);
+      result.nom = escapeHtml(document.getElementById("nomRecette").value);
       if (document.getElementById("inputHeure").value == "") {
         result.heure = 0;
       } else {
-        result.heure = document.getElementById("inputHeure").value;
+        result.heure = escapeHtml(document.getElementById("inputHeure").value);
       }
-      result.minutes = document.getElementById("inputMinute").value;
-      result.nb_personnes = document.getElementById("perRecette").value;
+      result.minutes = escapeHtml(document.getElementById("inputMinute").value);
+      result.nb_personnes = escapeHtml(document.getElementById("perRecette").value);
       result.etapes = new Array();
-      result.etapes[result.etapes.length] = document.getElementById("ingredients").value;
+      result.etapes[result.etapes.length] = escapeHtml(document.getElementById("ingredients").value);
       var nb_etape_ac = $('#etapes').children().length;
       for (var tmp = 1; tmp <= nb_etape_ac; tmp++) {
         var value = "etape" + tmp;
-        result.etapes[result.etapes.length] = document.getElementById(value).value;
+        result.etapes[result.etapes.length] = escapeHtml(document.getElementById(value).value);
       }
-      alert(JSON.stringify(result));
+      //alert(JSON.stringify(result));
       $.post("/ajoutrecette",
       {
         json: JSON.stringify(result)

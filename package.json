@@ -1,33 +1,36 @@
 {
   "name": "yakasserole",
-  "version": "0.0.0",
+  "version": "0.6.7",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
-    "cookie-parser": "~1.4.3",
-    "debug": "~2.6.3",
-    "express": "~4.15.2",
-    "jade": "~1.11.0",
-    "morgan": "~1.8.1",
-    "serve-favicon": "~2.4.2",
-    "ejs": "*",
     "bootstrap": "*",
-    "pg": "*",
-    "socket.io": "*",
-    "jquery": "*",
-    "passport": "*",
-    "passport-local": "*",
-    "passport-facebook": "*",
-    "passport-google-oauth": "*",
-    "express-session": "*",
-    "connect-flash" : "*",
+    "connect-flash": "*",
+    "cookie-parser": "~1.4.3",
     "datatables.net": "*",
     "datatables.net-bs": "*",
     "datatables.net-responsive": "*",
-    "datatables.net-responsive-bs": "*"
-
+    "datatables.net-responsive-bs": "*",
+    "debug": "~2.6.3",
+    "ejs": "*",
+    "express": "~4.15.2",
+    "express-session": "*",
+    "jade": "~1.11.0",
+    "jquery": "*",
+    "morgan": "~1.8.1",
+    "passport": "*",
+    "passport-facebook": "*",
+    "passport-google-oauth": "*",
+    "passport-local": "*",
+    "pg": "*",
+    "serve-favicon": "~2.4.2",
+    "shufflejs": "^4.2.0",
+    "socket.io": "*"
+  },
+  "devDependencies": {
+    "mixitup": "^3.1.11"
   }
 }

@@ -62,15 +62,17 @@ CREATE TABLE atelier (
     pays varchar(255)  NOT NULL,
     code_postal int  NOT NULL,
     valide boolean  NOT NULL,
+    prix money NOT NULL,
     CONSTRAINT atelier_pk PRIMARY KEY (id)
 );
 
 -- Table: commentaire
 CREATE TABLE commentaire (
+    id serial NOT NULL,
     id_compte int  NOT NULL,
     id_recette int  NOT NULL,
     contenu text  NOT NULL,
-    CONSTRAINT commentaire_pk PRIMARY KEY (id_compte,id_recette)
+    CONSTRAINT commentaire_pk PRIMARY KEY (id)
 );
 
 -- Table: compte

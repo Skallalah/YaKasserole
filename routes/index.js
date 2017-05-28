@@ -27,6 +27,94 @@ module.exports = function(app, passport, pool) {
 
   });
 
+  app.get('/ateliers', isLoggedIn, function(req, res, next) {
+    console.log("mdr");
+    pool.query("SELECT id," +
+	              "nom,"+
+	              "to_char(date, 'DD-MM-YYYY') as date,"+
+	              "to_char(date, 'HH24hMI') as debut,"+
+	              "to_char((date + duree), 'HH24hMI') as fin,"+
+	              "url_img,"+
+	              "informations,"+
+	              "ville,"+
+	              "adresse, prix from atelier "+
+    "ORDER BY id DESC")
+    .then((result)=>{
+      console.log(result);
+      res.render('ateliers.html', { title: 'Ateliers', user: req.user, ateliers: result });
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.redirect("/");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+
+  });
+
+  app.post('/rechercheatelier', function(req, res, next) {
+    console.log("recherche atelier...");
+    var comp = "";
+    var word = "%" + req.body.text + "%";
+    if (req.body.ordre == "Prix") {
+      comp = "prix";
+    } else if (req.body.ordre == "Temps") {
+      comp = "duree";
+    } else {
+      comp = "nom";
+    }
+    console.log(comp);
+    pool.query("SELECT id," +
+	              "nom,"+
+	              "to_char(date, 'DD-MM-YYYY') as date,"+
+	              "to_char(date, 'HH24hMI') as debut,"+
+	              "to_char((date + duree), 'HH24hMI') as fin,"+
+	              "url_img,"+
+	              "informations,"+
+	              "ville,"+
+	              "adresse, prix from atelier "+
+                "WHERE lower(nom) LIKE $1 " +
+                "ORDER BY " + comp + " DESC", [word])
+    .then((result)=>{
+      console.log(result);
+      res.send(result);
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.post('/rechercherecette', function(req, res, next) {
+    console.log("recherche recette...");
+    var comp = "";
+    var word = "%" + req.body.text + "%";
+    if (req.body.ordre == "Approbation") {
+      comp = "nb_aime";
+    } else if (req.body.ordre == "Temps") {
+      comp = "tmp_prep";
+    } else {
+      comp = "nom";
+    }
+    console.log(comp);
+    pool.query("SELECT id, nom, url_img, tmp_prep, count(*) AS nb_aime FROM recette " +
+    "LEFT JOIN aimer ON aimer.id_recette = recette.id " +
+    "WHERE lower(nom) LIKE $1 " +
+    "GROUP BY id, nom, url_img, tmp_prep " +
+    "ORDER BY " + comp + " DESC", [word])
+    .then((result)=>{
+      console.log(result);
+      res.send(result);
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+
+
   app.get('/mesrecettes', isLoggedIn, function(req, res, next) {
     console.log("mdr");
     pool.query("SELECT id, nom, url_img, tmp_prep, count(*) AS nb_aime FROM recette " +
@@ -213,7 +301,15 @@ module.exports = function(app, passport, pool) {
         [req.params.id_recette])
       .then((etapes)=>{
         console.log(etapes);
-        res.render('recettedetail.html', { title: 'Création de Recettes', user: req.user, recette_info: recette, recette_etapes: etapes });
+        pool.query("select commentaire.id, prenom, nom, url_img, contenu from commentaire " +
+                  "join compte on id_compte = compte.id " +
+                  "where id_recette = $1 " +
+                  "order by commentaire.id ASC",
+          [req.params.id_recette])
+          .then((commentaire)=>{
+            console.log(commentaire);
+            res.render('recettedetail.html', { title: 'Création de Recettes', user: req.user, recette_info: recette, recette_etapes: etapes, commentaires: commentaire });
+          })
       })
     })
     .catch((err)=>{

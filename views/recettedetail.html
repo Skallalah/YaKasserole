@@ -20,7 +20,7 @@
         <ul class="nav navbar-nav">
           <li><a href="/recettes">Recettes</a></li>
           <li role="separator" class="divider"></li>
-          <li><a href="#">Ateliers</a></li>
+          <li><a href="/ateliers">Ateliers</a></li>
         </ul>
 
         <ul class="nav navbar-nav navbar-right">
@@ -72,7 +72,7 @@
                     <%= recette_info.rows[0].url_img %>
                 <% } %>" class="img-responsive center-block">
       <div class="container-fluid container-main">
-        <h1><%= recette_info.rows[0].nom %></h1>
+        <h1><%- recette_info.rows[0].nom %></h1>
         <div class="row">
           <div class="col-md-6">
             <h2>Pour <%= recette_info.rows[0].nb_personne %> personnes</h2>
@@ -90,6 +90,21 @@
           <hr class="featurette-divider">
 
       </div>
+      <hr class="featurette-divider">
+      
+      <div class="row row-10" id="comment">
+      </div>
+
+      <div class="row row-10">
+        <h2>Donnez votre avis<h2>
+        <textarea class="form-control vresize squared" rows="5" id="textcomment"></textarea>
+        <button type="button" class="btn btn-primary squared">Confirmer</button>
+      </div>
+
+      <hr class="featurette-divider">
+      <footer class="container-fluid text-center">
+        <p class="float-right"> © Copyright YaKasserole 2017 </p>
+      </footer>
     </div>
 
 
@@ -104,6 +119,38 @@
                 "<div class=\"panel-heading\">Etape " + tmp + "</div>" +
                 "<div class=\"panel-body\">" + recette[tmp].contenu.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</div></div>";
       $( "#etapes" ).append( res );
+    }
+    var nbcomment = <%= commentaires.rowCount %>;
+    var comments = <%- JSON.stringify(commentaires.rows) %>;
+    for (var iter = 0; iter < nbcomment; iter++) {
+      var res = "<div class=\"media\">" +
+        "<div class=\"media-left\">" +
+          "<img src=\"";
+      if (comments[iter].url_img == null) {
+        res = res + "/person-placeholder.jpg";
+      } else {
+        res = res + comments[iter].url_img;
+      }
+          res = res + "\" class=\"media-object\" style=\"width:60px\">" +
+        "</div><div class=\"media-body\">" +
+          "<h4 class=\"media-heading\">" + comments[iter].prenom + " " + comments[iter].nom + "</h4>" +
+          "<div id=\"contenu" + comments[iter].id + "\">" +
+            "<p id=\"text" + comments[iter].id +"\">" + comments[iter].contenu + "</p>" +
+          "</div>" +
+        "</div>" +
+        "<div class=\"media-footer pull-right\" id=\"footer" + comments[iter].id + "\">" +
+          "<button type=\"button\" class=\"btn-primary squared\" onclick=\"editer(" + comments[iter].id + ")\">Editer</button>" +
+          "\n<button type=\"button\" class=\"btn-primary squared\" onclick=\"supprimer(" + comments[iter].id + ")\">Supprimer</button>" +
+        "</div></div>";
+      $( "#comment" ).append( res );
+    }
+  </script>
+
+  <script>
+    function editer(id) {
+      document.getElementById("contenu" + id).innerHTML = "<textarea class=\"form-control vresize squared\" rows=\"3\" id=\"edite" + id + "\">" +
+      document.getElementById("text" + id).innerHTML + "</textarea>";
+      document.getElementById("footer" + id).innerHTML = "<button type=\"button\" class=\"btn-primary squared\" style=\"margin-top: 10px\" onclick=\"modify(" + id + ")\">Confirmer</button>";
     }
   </script>
 

@@ -29,6 +29,7 @@ app.use('/bootstrapJS', express.static(__dirname + '/node_modules/bootstrap/js')
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 app.use('/datatable', express.static(__dirname + '/node_modules/datatables.net/js/'));
 app.use('/datatable-net', express.static(__dirname + '/node_modules/datatables.net-bs/'));
+app.use('/shuffle', express.static(__dirname + '/node_modules/shufflejs/dist'));
 
 // Favicon utilisée
 app.use(favicon(path.join(__dirname,'ressources', 'logo_fav.ico')));

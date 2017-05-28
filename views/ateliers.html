@@ -1,0 +1,254 @@
+<% include layout.html %>
+<link rel="stylesheet" type="text/css" href="/css/recette.css">
+<link rel="stylesheet" type="text/css" href="/css/roundbutton.css">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-inverse navbar-static-top navbar-fixed-top">
+    <a href="#" class="pull-left" id="<% if (typeof user != 'undefined') {%>menu-toggle<% } %>">
+    <img src="/logo.png" width="60" height="50"></a>
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">Yakasserole</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a href="/recettes">Recettes</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="/ateliers">Ateliers</a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <% if (typeof user == 'undefined') {%>
+            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Nous rejoindre</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#modalConnexion"><span class="glyphicon glyphicon-log-in"></span> Se connecter</a></li>
+          <% } else { %>
+            <li><a href="/moncompte"><span class="glyphicon glyphicon-user"></span> Bienvenue, <%= user.prenom %></a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div id="wrapper">
+    <div id="sidebar-wrapper">
+      <ul class="sidebar-nav">
+        <img src="<% if (typeof user != 'undefined') { %>
+                    <% if (user.url_img == null) {%>
+                      /person-placeholder.jpg
+                    <% } else { %>
+                      <%= user.url_img %>
+                    <% } %>
+                  <% } %>" class="img-responsive img-circle center-block" width="130" height="130">
+        <h2 class="text-center" id="nom-nav">
+          <% if (typeof user != 'undefined') { %>
+            <%= user.prenom %>  <%= user.nom %>
+          <% } %>
+        </h2>
+        <hr class="featurette-divider">
+        <li>
+          <a href="/mesrecettes">Mes recettes</a>
+        </li>
+        <li>
+          <a href="#">Mon ateliers</a>
+        </li>
+        <li>
+          <a href="/moncompte">Mon profil</a>
+        </li>
+        <li>
+          <a href="/logout">Se déconnecter</a>
+        </li>
+      </ul>
+    </div>
+    <div id="page-content-wrapper" style="padding: 20px">
+      <div class="container-fluid container-main">
+        <div class="row">
+          <h1>Nos ateliers</h1>
+        </div>
+
+        <div class="row">
+          <h1> Recherche </h1>
+        </div>
+        <div class="row row-10">
+          <div class="col-md-6">
+
+            <div class="input-group">
+              <input id="search" type="text" class="form-control squared" placeholder="Rechercher...">
+              <div class="input-group-btn">
+                <button id="searchButton" class="btn btn-default squared" type="submit" onclick="search()">
+                  <i class="glyphicon glyphicon-search"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <select class="form-control squared" id="sel1">
+                <option>Prix</option>
+                <option>Temps</option>
+                <option>Alphabétique</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div id="grid" class="row row-10">
+
+          <hr class="featurette-divider">
+          <div id="loader" class="loader center-div hidden"></div>
+          <div id="gridContent">
+
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+
+
+  </div>
+
+  <script>
+    var ateliersSize = <%= ateliers.rowCount %>;
+    var ateliers = <%- JSON.stringify(ateliers.rows) %>;
+    for (var iter = 0; iter < ateliersSize; iter++) {
+
+
+      var res = "<div class=\"col-md-12\">" +
+        "<div class=\"panel panel-default\" style=\"border-radius: 20px\">" +
+        "<div class=\"panel-body\">" +
+        "<div class=\"row\">" +
+        "<div class=\"col-sm-3\">" +
+        "<img src=\"";
+      if (ateliers[iter].url_img == null) {
+        res = res + "https://fakeimg.pl/500x350/";
+      } else {
+        res = res + ateliers[iter].url_img;
+      }
+      res = res + "\" class=\"img-responsive\">" +
+      "</div>" +
+      "<div class=\"col-sm-6\">" +
+      "<h1>" + ateliers[iter].nom + "</h1>" +
+      "<h3>" + ateliers[iter].date + " - de " + ateliers[iter].debut + " à " + ateliers[iter].fin + "</h3>" +
+      "<h3>" + ateliers[iter].ville + " - " + ateliers[iter].adresse + "</h3>" +
+      "</div>" +
+      "<div class=\"col-sm-3 text-center\">" +
+      "<i class=\"hovicon effect-3 sub-b\">" + ateliers[iter].prix + "</i>" +
+      "</div>" +
+      "</div>" +
+      "<div class=\"row\">" +
+      "<div class=\"col-md-12\">" +
+      "<div class=\"text-center\">" +
+      "<span class=\"glyphicon glyphicon-chevron-down\" aria-hidden=\"true\" style=\"font-size: 15px; cursor: pointer;\" data-toggle=\"collapse\" data-target=\"#collapse" + iter + "\"></span></h1>" +
+      "</div>" +
+      "<div class=\"collapse\" id=\"collapse" + iter + "\" style=\"margin-top: 10px\">" +
+      "<hr class=\"featurette-divider\">" +
+      "<p>" + ateliers[iter].informations + "</p>" +
+      "</div></div></div></div></div></div>";
+      $("#gridContent").append(res);
+    }
+  </script>
+
+  <script>
+    function search() {
+      $("#searchButton").prop('disabled', true);
+      document.getElementById("gridContent").innerHTML = "";
+      $("#loader").toggleClass("hidden");
+      $.post('/rechercheatelier',
+      {
+        text: document.getElementById("search").value,
+        ordre: document.getElementById("sel1").value
+      }, function(data)
+      {
+        if (data != null) {
+          var ateliersSize = data.rowCount;
+          var ateliers = data.rows;
+          for (var iter = 0; iter < ateliersSize; iter++) {
+            var res = "<div class=\"col-md-12\">" +
+              "<div class=\"panel panel-default\" style=\"border-radius: 20px\">" +
+              "<div class=\"panel-body\">" +
+              "<div class=\"row\">" +
+              "<div class=\"col-sm-3\">" +
+              "<img src=\"";
+            if (ateliers[iter].url_img == null) {
+              res = res + "https://fakeimg.pl/500x350/";
+            } else {
+              res = res + ateliers[iter].url_img;
+            }
+            res = res + "\" class=\"img-responsive\">" +
+            "</div>" +
+            "<div class=\"col-sm-6\">" +
+            "<h1>" + ateliers[iter].nom + "</h1>" +
+            "<h3>" + ateliers[iter].date + " - de " + ateliers[iter].debut + " à " + ateliers[iter].fin + "</h3>" +
+            "<h3>" + ateliers[iter].ville + " - " + ateliers[iter].adresse + "</h3>" +
+            "</div>" +
+            "<div class=\"col-sm-3 text-center\">" +
+            "<i class=\"hovicon effect-3 sub-b\">" + ateliers[iter].prix + "</i>" +
+            "</div>" +
+            "</div>" +
+            "<div class=\"row\">" +
+            "<div class=\"col-md-12\">" +
+            "<div class=\"text-center\">" +
+            "<span class=\"glyphicon glyphicon-chevron-down\" aria-hidden=\"true\" style=\"font-size: 15px; cursor: pointer;\" data-toggle=\"collapse\" data-target=\"#collapse" + iter + "\"></span></h1>" +
+            "</div>" +
+            "<div class=\"collapse\" id=\"collapse" + iter + "\" style=\"margin-top: 10px\">" +
+            "<hr class=\"featurette-divider\">" +
+            "<p>" + ateliers[iter].informations + "</p>" +
+            "</div></div></div></div></div></div>";
+            $("#gridContent").append(res);
+          }
+        }
+        $("#searchButton").prop('disabled', false);
+        $("#loader").toggleClass("hidden");
+      });
+    }
+  </script>
+
+  <script>
+  function hideThings() {
+    $('#first').toggleClass('hidden');
+  }
+  </script>
+  <script>
+  function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+  }
+
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+  }
+  </script>
+
+  <script>
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+  </script>
+
+  <script>
+  $(window).scroll(function() {
+    $(".slideanim").each(function(){
+      var pos = $(this).offset().top;
+      var winTop = $(window).scrollTop();
+      if (pos < winTop + 300) {
+        $(this).addClass("slideAni");
+      }
+    });
+  });
+  </script>
+
+</body>
+
+
+
+</html>
