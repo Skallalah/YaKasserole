@@ -69,8 +69,8 @@
         </li>
       </ul>
     </div>
-    <div id="page-content-wrapper" style="padding: 20px">
-      <div class="container-fluid container-main">
+    <div id="page-content-wrapper">
+      <div class="container-fluid container-main" style="margin: 20px">
         <div class="row">
           <section>
             <div class="wizard">
@@ -288,6 +288,10 @@
         </div>
 
       </div>
+      <hr class="featurette-divider">
+      <footer class="container-fluid text-center">
+        <p class="float-right"> © Copyright YaKasserole 2017. <a href="/nouscontacter">Nous contacter</a></p>
+      </footer>
     </div>
 
 
@@ -412,9 +416,9 @@
       }
       result.date = "" + document.getElementById("inputAnnée").value + "-" +
                     document.getElementById("inputMois").value + "-" +
-                    document.getElementById("inputJour").value + " 00:" +
-                    heureD + ":" + minuteD;
-      result.duree = "00:" + heure + ":" + minute;
+                    document.getElementById("inputJour").value + " " +
+                    heureD + ":" + minuteD + ":00";
+      result.duree = heure + ":" + minute + ":00";
       result.nb_personnes = escapeHtml(document.getElementById("perAtelier").value);
       result.informations = escapeHtml(document.getElementById("infosAtelier").value);
       result.ville = escapeHtml(document.getElementById("villeAtelier").value);

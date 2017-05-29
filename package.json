@@ -21,6 +21,7 @@
     "jade": "~1.11.0",
     "jquery": "*",
     "morgan": "~1.8.1",
+    "nodemailer": "^4.0.1",
     "passport": "*",
     "passport-facebook": "*",
     "passport-google-oauth": "*",

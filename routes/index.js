@@ -1,5 +1,15 @@
 module.exports = function(app, passport, pool) {
   /* GET home page. */
+  var nodemailer = require('nodemailer');
+
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'serviceyakasserole@gmail.com',
+        pass: 'yakasserole2017'
+    }
+  });
+
   app.get('/', function(req, res, next) {
     if (req.isAuthenticated()) {
       res.render('index.html', { title: 'YaKasserole', user : req.user });
@@ -8,6 +18,24 @@ module.exports = function(app, passport, pool) {
       res.render('index.html', { title: 'YaKasserole'});
     }
   });
+
+  function sendmail(prenom, nom, from_, to_, subject_, text_) {
+    let mailOptions = {
+      from: '\"' + prenom + ' ' + nom + '\"? <' + from_ +'>', // sender address
+      to: to_, // list of receivers
+      subject: subject_, // Subject line
+      text: text_ // plain text body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        return 0;
+      }
+      console.log('Message %s envoyé: %s', info.messageId, info.response);
+      return 1;
+    });
+  }
 
   app.get('/recettes', isLoggedIn, function(req, res, next) {
     console.log("mdr");
@@ -321,7 +349,7 @@ module.exports = function(app, passport, pool) {
     } else {
       url = recette.url_img;
     }
-    var time = "00:" + recette.heure + ":" + recette.minutes;
+    var time = recette.heure + ":" + recette.minutes + ":00";
     pool.query("SELECT ADD_RECETTE($1, $2, $3, $4, $5)",
       [recette.nom, req.user.id, url, time, recette.nb_personnes])
     .then((result)=>{
@@ -500,6 +528,22 @@ module.exports = function(app, passport, pool) {
       //done(new Error(`User with the id ${id} does not exist`));
     })
   });
+
+  app.get('/nouscontacter', function(req, res, next) {
+    res.render('nouscontacter.html', { title: 'Nous Contacter', user : req.user });
+  });
+
+  app.post('/contacter', function(req, res, next) {
+    console.log("Contact...");
+    if (sendmail(req.body.prenom, req.body.nom, req.body.email, 'serviceyakasserole@gmail.com', req.body.objet, req.body.message) == 1) {
+      res.send("success");
+    }
+    else {
+      res.send("success")
+    }
+  });
+
+
 
 // IO SOCKET EXCHANGE ==========================================================
 

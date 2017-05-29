@@ -1,0 +1,380 @@
+<% include layout.html %>
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-static-top navbar-fixed-top">
+    <a href="#" class="pull-left" id="<% if (typeof user != 'undefined') {%>menu-toggle<% } %>">
+      <img src="/logo.png" width="60" height="50"></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Yakasserole</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+          <ul class="nav navbar-nav">
+            <li><a href="/recettes">Recettes</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="/ateliers">Ateliers</a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <% if (typeof user == 'undefined') {%>
+              <li><a href="#" data-toggle="modal" data-target="#modalInscription"><span class="glyphicon glyphicon-user"></span> Nous rejoindre</a></li>
+              <li><a href="#" data-toggle="modal" data-target="#modalConnexion"><span class="glyphicon glyphicon-log-in"></span> Se connecter</a></li>
+              <% } else { %>
+                <li><a href="/moncompte"><span class="glyphicon glyphicon-user"></span> Bienvenue, <%= user.prenom %></a></li>
+                <% } %>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        <div id="modalConnexion" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content squared">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Se connecter</h4>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="emailConnexion">Email:</label>
+                  <input type="text" class="form-control squared" id="emailConnexion">
+                </div>
+                <div class="form-group">
+                  <label for="mdpConnexion">Mot de passe:</label>
+                  <input type="password" class="form-control squared" id="mdpConnexion">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <a href="/auth/google" type="button" class="btn btn-success squared pull-left btn-sq-xs"><b>G+</b></a>
+                <a href="/auth/facebook" type="button" class="btn btn-info squared pull-left btn-sq-xs"><b>F</b></a>
+                <button type="button" onclick="login()" class="btn btn-primary squared">Connexion</button>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+
+        <div id="modalInscription" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content squared">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Inscription</h4>
+              </div>
+              <div class="modal-body">
+                <div id="inscription-loader" class="loader center-div hidden"></div>
+                <div id="inscription-content" class="">
+                  <div id="inscription-alert"></div>
+                  <div class="form-group">
+                    <label for="emailInscription">Email:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-envelope"></i></span>
+                      <input type="text" class="form-control squared" id="emailInscription">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="mdpInscription">Mot de passe:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-lock"></i></span>
+                      <input type="password" class="form-control squared" id="mdpInscription">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <label for="prenomInscription">Prénom:</label>
+                        <input type="text" class="form-control squared" id="prenomInscription">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="nomInscription">Nom:</label>
+                        <input type="text" class="form-control squared" id="nomInscription">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="adresseInscription">Adresse:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon squared" id="sizing-addon1"><i class="glyphicon glyphicon-home"></i></span>
+                      <input type="text" class="form-control squared" id="adresseInscription">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <label for="paysInscription">Pays:</label>
+                        <input type="text" class="form-control squared" id="paysInscription">
+                      </div>
+                      <div class="col-md-4">
+                        <label for="villeInscription">Ville:</label>
+                        <input type="text" class="form-control squared" id="villeInscription">
+                      </div>
+                      <div class="col-md-4">
+                        <label for="codeInscription">Code postal:</label>
+                        <input type="text" class="form-control squared" id="codeInscription">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" onclick="signup()" class="btn btn-primary squared" id="inscription-bouton">S'inscrire</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="wrapper">
+
+
+          <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <img src="<% if (typeof user != 'undefined') { %>
+                          <% if (user.url_img == null) {%>
+                            /person-placeholder.jpg
+                          <% } else { %>
+                            <%= user.url_img %>
+                          <% } %>
+                        <% } %>" class="img-responsive img-circle center-block" width="130" height="130">
+              <h2 class="text-center" id="nom-nav">
+                <% if (typeof user != 'undefined') { %>
+                  <%= user.prenom %>  <%= user.nom %>
+                <% } %>
+              </h2>
+              <hr class="featurette-divider">
+              <li>
+                <a href="/mesrecettes">Mes recettes</a>
+              </li>
+              <% if (typeof user != 'undefined' ) { %>
+                <% if (user.status == "Chef") { %>
+                  <li>
+                    <a href="/mesateliers">Mes ateliers</a>
+                  </li>
+                <% } %>
+              <% } %>
+              <li>
+                <a href="/moncompte">Mon profil</a>
+              </li>
+              <li>
+                <a href="/logout">Se déconnecter</a>
+              </li>
+            </ul>
+          </div>
+
+
+
+            <!---Page content-->
+            <div id="page-content-wrapper">
+              <div class="container-fluid container-main">
+                <div class="row row-10">
+                  <div id="alert">
+                  </div>
+                  <div class="col-md-4">
+                    <h1>Nous contacter</h1>
+                    <p> Besoin de conseils ? D'informations ? Ou bien simplement pour régler un problème ? N'hésitez pas à envoyer un email, et nous y répondrons au plus vite !
+                  </div>
+                  <div class="col-md-8" style="margin-top: 30px">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <label for="prenomInscription">Prénom</label>
+                        <input type="text" class="form-control squared" id="prenom">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="prenomInscription">Nom</label>
+                        <input type="text" class="form-control squared" id="nom">
+                      </div>
+                    </div>
+                    <label for="prenomInscription">Email</label>
+                    <input type="text" class="form-control squared" id="email">
+                    <div class="form-group">
+                      <label for="prenomInscription">Objet</label>
+                      <select class="form-control squared" id="sel1">
+                        <option>Problème de connexion</option>
+                        <option>Demande d'informations</option>
+                        <option>Autre</option>
+                      </select>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <textarea class="form-control vresize squared" rows="5" id="message" placeholder="Votre message..."></textarea>
+                      </div>
+                    </div>
+                    <div class="row row-10">
+                      <div class="col-md-12">
+                        <button id="send" type="button" class="btn btn-primary squared pull-right" onclick="send()">Envoyer</button>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <hr class="featurette-divider">
+              <footer class="container-fluid text-center">
+                <p class="float-right"> © Copyright YaKasserole 2017. <a href="/nouscontacter">Nous contacter</a></p>
+              </footer>
+
+            </div>
+
+          </div>
+
+
+                  <script>
+                  function openNav() {
+                    document.getElementById("mySidenav").style.width = "250px";
+                    document.getElementById("main").style.marginLeft = "250px";
+                  }
+
+                  function closeNav() {
+                    document.getElementById("mySidenav").style.width = "0";
+                    document.getElementById("main").style.marginLeft= "0";
+                  }
+                  </script>
+
+                  <script>
+                  function login() {
+                    $.post("/login", { email: document.getElementById("emailConnexion").value, pass: document.getElementById("mdpConnexion").value },
+                    function(data) {
+                      console.log(data);
+                      $(location).attr("href", "/");
+                    });
+                  }
+
+                  function signup() {
+                    if (document.getElementById("emailInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre email pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("mdpInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre mot de passe pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("prenomInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre prénom pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("nomInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre nom pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("adresseInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre addresse pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("paysInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre pays pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("villeInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre ville pour l'inscription.</div>";
+                      return;
+                    }
+                    if (document.getElementById("codeInscription").value == "") {
+                      document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre code postal pour l'inscription.</div>";
+                      return;
+                    }
+                    document.getElementById("inscription-alert").innerHTML = "";
+                    $("#inscription-bouton").prop('disabled', true);
+                    $("#inscription-content").toggleClass("hidden");
+                    $("#inscription-loader").toggleClass("hidden");
+                    $.post("/signup",
+                    { email: document.getElementById("emailInscription").value,
+                      pass: document.getElementById("mdpInscription").value,
+                      prenom: document.getElementById("prenomInscription").value,
+                      nom: document.getElementById("nomInscription").value,
+                      adresse: document.getElementById("adresseInscription").value,
+                      pays: document.getElementById("paysInscription").value,
+                      ville: document.getElementById("villeInscription").value,
+                      code: document.getElementById("codeInscription").value
+                    },
+                    function(data) {
+                      $("#inscription-bouton").prop('disabled', false);
+                      $("#inscription-content").toggleClass("hidden");
+                      $("#inscription-loader").toggleClass("hidden");
+                      console.log(data);
+                      if (data == 'success') {
+                        document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Votre inscription est réussie, vous pouvez désormais vous connecter.</div>";
+                      }
+                      else if (data == "error") {
+                        document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Une erreur a eu lieu, veuilez rééssayez ultérieurement.</div>";
+                      }
+                      else {
+                        document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Cette addresse email est déjà attribué à un compte.</div>";
+                      }
+                      //$(location).attr("href", "/");
+                    });
+                  }
+
+                  </script>
+
+                  <script>
+                    function send() {
+                      if (document.getElementById("prenom").value == "") {
+                        document.getElementById("alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre prénom pour envoyer le message.</div>";
+                        return;
+                      }
+                      if (document.getElementById("nom").value == "") {
+                        document.getElementById("alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre nom pour envoyer le message.</div>";
+                        return;
+                      }
+                      if (document.getElementById("email").value == "") {
+                        document.getElementById("alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre email pour envoyer le message.</div>";
+                        return;
+                      }
+                      if (document.getElementById("message").value == "") {
+                        document.getElementById("alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Vous n'avez pas précisé de message.</div>";
+                        return;
+                      }
+                      document.getElementById("alert").innerHTML = "";
+                      $("#send").prop('disabled', true);
+                      $.post("/contacter",
+                      {
+                        email: document.getElementById("email").value,
+                        prenom: document.getElementById("prenom").value,
+                        nom: document.getElementById("nom").value,
+                        message: document.getElementById("message").value,
+                        objet: document.getElementById("sel1").value,
+                      },
+                      function(data) {
+                        $("#send").prop('disabled', false);
+                        if (data == 'success') {
+                          document.getElementById("alert").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Message envoyé, nous vous contacterons le plus vite possible !</div>";
+                        }
+                        else {
+                          document.getElementById("alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + data + "</div>";
+                        }
+                        //$(location).attr("href", "/");
+                      });
+                    }
+                  </script>
+
+                  <script>
+                  if (1 == 1) { // A modifier.
+                    $("#menu-toggle").click(function(e) {
+                      e.preventDefault();
+                      $("#wrapper").toggleClass("toggled");
+                    });
+                  }
+                  </script>
+
+                  <script>
+                  $(window).scroll(function() {
+                    $(".slideanim").each(function(){
+                      var pos = $(this).offset().top;
+                      var winTop = $(window).scrollTop();
+                      if (pos < winTop + 400) {
+                        $(this).addClass("slideAni");
+                      }
+                    });
+                  });
+                  </script>
+
+                </body>
+</html>
