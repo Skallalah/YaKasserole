@@ -164,6 +164,19 @@
   </script>
 
   <script>
+
+  function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
     function editer(id) {
       document.getElementById("contenu" + id).innerHTML = "<textarea class=\"form-control vresize squared\" rows=\"3\" id=\"edite" + id + "\">" +
       document.getElementById("text" + id).innerHTML + "</textarea>";
@@ -176,7 +189,7 @@
       } else {
         $.post('/editecommentaire',
         {
-          text: document.getElementById("edite" + id).value,
+          text: escapeHtml(document.getElementById("edite" + id).value),
           idcomment: id
         }, function()
         {
@@ -199,7 +212,7 @@
       if (document.getElementById("textcomment").value != "") {
         $.post('/creercommentaire',
         {
-          text: document.getElementById("textcomment").value,
+          text: escapeHtml(document.getElementById("textcomment").value),
           idrecette: <%= recette_info.rows[0].id %>
         }, function()
         {

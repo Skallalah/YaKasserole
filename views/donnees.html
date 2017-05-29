@@ -129,6 +129,32 @@
               </table>
             </div>
 
+            <hr class="featurette-divider">
+
+            <div class="row">
+              <h1>Ateliers</h1>
+
+              <table id="example2" class="table  table-hover" cellspacing="0" width="100%">
+                <thead>
+                  <tr>
+                    <th>Id</th>
+                    <th>Nom</th>
+                    <th>Créateur</th>
+                    <th>Image</th>
+                    <th>Date</th>
+                    <th>Durée</th>
+                    <th>Pays</th>
+                    <th>Ville</th>
+                    <th>Adresse</th>
+                    <th>Prix</th>
+                    <th>Validée</th>
+                  </tr>
+                </thead>
+                <tbody id="tableAtelier">
+                </tbody>
+              </table>
+            </div>
+
           </div>
           <hr class="featurette-divider">
           <footer class="container-fluid text-center">
@@ -170,9 +196,34 @@
             "<td><a href=\"" + recettes[iter].url_img + "\">" + recettes[iter].url_img + "</a></td>" +
             "<td>" + recettes[iter].to_char + "</td>" +
             "<td>" + recettes[iter].nb_personne + "</td>" +
-            "<td>" + recettes[iter].date_creation + "</td>" +
-            "<td>" + recettes[iter].valide + "</td></tr>";
+            "<td>" + recettes[iter].date_creation + "</td>";
+            if (recettes[iter].valide == 'Oui') {
+              res = res + "<td>" + "<button class=\"btn-primary btn-green squared\"><span class=\"glyphicon glyphicon-ok\" onclick=\"invalidate(" + recettes[iter].id + ")\"></span></button>" + "</td></tr>";
+            } else {
+              res = res + "<td>" + "<button class=\"btn-primary btn-red squared\"><span class=\"glyphicon glyphicon-remove\" onclick=\"validate(" + recettes[iter].id + ")\"></span></button>" + "</td></tr>";
+            }
             $("#tableRecette").append(res);
+        }
+
+        var nbateliers = <%= ateliers.rowCount %>;
+        var ateliers = <%- JSON.stringify(ateliers.rows) %>;
+        for (var iter = 0; iter < nbateliers; iter++) {
+          var res = "<tr><td>" + ateliers[iter].id + "</td>" +
+          "<td>" + "<a data-toggle=\"popover\" style=\"cursor:pointer;\" title=\"Description\" data-content=\"" + ateliers[iter].informations + "\">" + ateliers[iter].nom + "</a></td>" +
+          "<td>" + ateliers[iter].createur + "</td>" +
+          "<td><a href=\"" + ateliers[iter].url_img + "\">" + comptes[iter].url_img + "</a></td>" +
+          "<td>" + ateliers[iter].date + "</td>" +
+          "<td>" + ateliers[iter].to_char + "</td>" +
+          "<td>" + ateliers[iter].pays + "</td>" +
+          "<td>" + ateliers[iter].ville + "</td>" +
+          "<td>" + ateliers[iter].adresse + "</td>" +
+          "<td>" + ateliers[iter].prix + "</td>";
+          if (ateliers[iter].valide == 'Oui') {
+            res = res + "<td>" + "<button class=\"btn-primary btn-green squared\"><span class=\"glyphicon glyphicon-ok\" onclick=\"invalidateatelier(" + ateliers[iter].id + ")\"></span></button>" + "</td></tr>";
+          } else {
+            res = res + "<td>" + "<button class=\"btn-primary btn-red squared\"><span class=\"glyphicon glyphicon-remove\" onclick=\"validateatelier(" + ateliers[iter].id + ")\"></span></button>" + "</td></tr>";
+          }
+          $("#tableAtelier").append(res);
         }
       $('#example').DataTable({
         "scrollX": true,
@@ -225,8 +276,77 @@
         }
         }
       });
+
+      $('#example2').DataTable({
+        "scrollX": true,
+        language: {
+        processing:     "Traitement en cours...",
+        search:         "Rechercher&nbsp;:",
+        lengthMenu:    "Afficher _MENU_ &eacute;l&eacute;ments",
+        info:           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+        infoEmpty:      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+        infoFiltered:   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+        infoPostFix:    "",
+        loadingRecords: "Chargement en cours...",
+        zeroRecords:    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+        emptyTable:     "Aucune donnée disponible dans le tableau",
+        paginate: {
+            first:      "Premier",
+            previous:   "Pr&eacute;c&eacute;dent",
+            next:       "Suivant",
+            last:       "Dernier"
+        },
+        aria: {
+            sortAscending:  ": activer pour trier la colonne par ordre croissant",
+            sortDescending: ": activer pour trier la colonne par ordre décroissant"
+        }
+        }
+      });
+      $('[data-toggle="popover"]').popover({container: 'body'});
     });
 
+  </script>
+
+  <script>
+    function invalidate(id_) {
+      $.post("/invaliderecette",
+      {
+        id: id_
+      },
+      function() {
+        location.reload();
+      });
+    }
+
+    function validate(id_) {
+      $.post("/validerecette",
+      {
+        id: id_
+      },
+      function() {
+        location.reload();
+      });
+    }
+
+    function invalidateatelier(id_) {
+      $.post("/invalideatelier",
+      {
+        id: id_
+      },
+      function() {
+        location.reload();
+      });
+    }
+
+    function validateatelier(id_) {
+      $.post("/validateatelier",
+      {
+        id: id_
+      },
+      function() {
+        location.reload();
+      });
+    }
   </script>
 
   <script>
@@ -265,43 +385,6 @@
   });
   </script>
 
-  <script>
-
-  function modification() {
-    if (document.getElementById("prenomModification").value == "") {
-      document.getElementById("modification-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Votre prénom doit avoir une valeur.</div>";
-      return;
-    }
-    if (document.getElementById("nomModification").value == "") {
-      document.getElementById("modification-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Votre nom doit avoir une valeur.</div>";
-      return;
-    }
-    document.getElementById("modification-alert").innerHTML = ""
-    $("#modification-bouton").prop('disabled', true);
-    $.post("/modification",
-    {
-      prenom: document.getElementById("prenomModification").value,
-      nom: document.getElementById("nomModification").value,
-      adresse: document.getElementById("adresseModification").value,
-      pays: document.getElementById("paysModification").value,
-      ville: document.getElementById("villeModification").value,
-      code: document.getElementById("codeModification").value,
-      numero: document.getElementById("numModification").value,
-      urlimg: document.getElementById("imgModification").value
-    },
-    function(data) {
-      $("#inscription-bouton").prop('disabled', false);
-      console.log(data);
-      if (data == 'success') {
-        $(location).attr("href", "/moncompte");
-      }
-      else {
-        document.getElementById("modification-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Une erreur a eu lieu, veuilez rééssayez ultérieurement.</div>";
-      }
-    });
-  }
-
-  </script>
 
 </body>
 

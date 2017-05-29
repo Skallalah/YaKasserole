@@ -341,6 +341,17 @@
                   }
 
                   function signup() {
+                    function escapeHtml(text) {
+                      var map = {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#039;'
+                      };
+
+                      return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+                    }
                     if (document.getElementById("emailInscription").value == "") {
                       document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Il manque votre email pour l'inscription.</div>";
                       return;
@@ -378,14 +389,14 @@
                     $("#inscription-content").toggleClass("hidden");
                     $("#inscription-loader").toggleClass("hidden");
                     $.post("/signup",
-                    { email: document.getElementById("emailInscription").value,
-                      pass: document.getElementById("mdpInscription").value,
-                      prenom: document.getElementById("prenomInscription").value,
-                      nom: document.getElementById("nomInscription").value,
-                      adresse: document.getElementById("adresseInscription").value,
-                      pays: document.getElementById("paysInscription").value,
-                      ville: document.getElementById("villeInscription").value,
-                      code: document.getElementById("codeInscription").value
+                    { email: escapeHtml(document.getElementById("emailInscription").value),
+                      pass: escapeHtml(document.getElementById("mdpInscription").value),
+                      prenom: escapeHtml(document.getElementById("prenomInscription").value),
+                      nom: escapeHtml(document.getElementById("nomInscription").value),
+                      adresse: escapeHtml(document.getElementById("adresseInscription").value),
+                      pays: escapeHtml(document.getElementById("paysInscription").value),
+                      ville: escapeHtml(document.getElementById("villeInscription").value),
+                      code: escapeHtml(document.getElementById("codeInscription").value)
                     },
                     function(data) {
                       $("#inscription-bouton").prop('disabled', false);

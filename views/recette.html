@@ -177,14 +177,26 @@
   </script>
 
   <script>
+  function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
     function search() {
       $("#searchButton").prop('disabled', true);
       document.getElementById("recettesTable").innerHTML = "";
       $("#loader").toggleClass("hidden");
       $.post('/rechercherecette',
       {
-        text: document.getElementById("search").value,
-        ordre: document.getElementById("sel1").value
+        text: escapeHtml(document.getElementById("search").value),
+        ordre: escapeHtml(document.getElementById("sel1").value)
       }, function(data)
       {
         if (data != null) {

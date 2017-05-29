@@ -125,7 +125,7 @@
           <a href="/mesrecettes">Mes recettes</a>
         </li>
         <% if (typeof user != 'undefined' ) { %>
-          <% if (user.status == "Chef") { %>
+          <% if (user.status == "Chef" || user.status == "Admin") { %>
             <li>
               <a href="/mesateliers">Mes ateliers</a>
             </li>
@@ -134,6 +134,13 @@
         <li>
           <a href="/moncompte">Mon profil</a>
         </li>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Admin") { %>
+            <li>
+              <a href="/donnees">Données</a>
+            </li>
+          <% } %>
+        <% } %>
         <li>
           <a href="/logout">Se déconnecter</a>
         </li>
@@ -352,6 +359,18 @@
 
   <script>
 
+  function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
   function modification() {
     if (document.getElementById("prenomModification").value == "") {
       document.getElementById("modification-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Votre prénom doit avoir une valeur.</div>";
@@ -365,14 +384,14 @@
     $("#modification-bouton").prop('disabled', true);
     $.post("/modification",
     {
-      prenom: document.getElementById("prenomModification").value,
-      nom: document.getElementById("nomModification").value,
-      adresse: document.getElementById("adresseModification").value,
-      pays: document.getElementById("paysModification").value,
-      ville: document.getElementById("villeModification").value,
-      code: document.getElementById("codeModification").value,
-      numero: document.getElementById("numModification").value,
-      urlimg: document.getElementById("imgModification").value
+      prenom: escapeHtml(document.getElementById("prenomModification").value),
+      nom: escapeHtml(document.getElementById("nomModification").value),
+      adresse: escapeHtml(document.getElementById("adresseModification").value),
+      pays: escapeHtml(document.getElementById("paysModification").value),
+      ville: escapeHtml(document.getElementById("villeModification").value),
+      code: escapeHtml(document.getElementById("codeModification").value),
+      numero: escapeHtml(document.getElementById("numModification").value),
+      urlimg: escapeHtml(document.getElementById("imgModification").value)
     },
     function(data) {
       $("#inscription-bouton").prop('disabled', false);

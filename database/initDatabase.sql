@@ -322,7 +322,7 @@ BEGIN
           RETURN 0;
         END IF;
         INSERT INTO atelier
-        VALUES (DEFAULT, id_creator_, nom_, date_, duree_, url_img_, nb_personne_, informations_, ville_, adresse_, pays_, code_, TRUE, prix_);
+        VALUES (DEFAULT, id_creator_, nom_, date_, duree_, url_img_, nb_personne_, informations_, ville_, adresse_, pays_, code_, FALSE, prix_);
         RETURN 1;
         EXCEPTION
         WHEN OTHERS THEN RETURN 2;
@@ -436,7 +436,7 @@ DECLARE
   ret INT;
 BEGIN
         INSERT INTO recette
-        VALUES (DEFAULT, nom_, id_compte_, url_img_, tmp_prep_, nb_personne_, now(), TRUE)
+        VALUES (DEFAULT, nom_, id_compte_, url_img_, tmp_prep_, nb_personne_, now(), FALSE)
         RETURNING id INTO ret;
         RETURN ret;
         EXCEPTION

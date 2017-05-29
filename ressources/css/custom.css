@@ -53,6 +53,30 @@
   color: #fff !important;
 }
 
+.btn-green {
+	border-color: transparent;
+  background-color: #24bd1f !important;
+  color: #fff !important;
+}
+
+.btn-green:hover {
+	border-color: transparent;
+  background-color: #1c9218 !important;
+  color: #fff !important;
+}
+
+.btn-red {
+	border-color: transparent;
+  background-color: #df1d1d !important;
+  color: #fff !important;
+}
+
+.btn-red:hover {
+	border-color: transparent;
+  background-color: #b81313 !important;
+  color: #fff !important;
+}
+
 .navbar {
 	  height: 50px;
     background-color: #464858;

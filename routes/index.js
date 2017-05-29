@@ -40,7 +40,7 @@ module.exports = function(app, passport, pool) {
   app.get('/recettes', isLoggedIn, function(req, res, next) {
     console.log("mdr");
     pool.query("SELECT id, nom, url_img, tmp_prep, count(*) AS nb_aime FROM recette " +
-    "LEFT JOIN aimer ON aimer.id_recette = recette.id " +
+    "LEFT JOIN aimer ON aimer.id_recette = recette.id WHERE valide = TRUE " +
     "GROUP BY id, nom, url_img, tmp_prep " +
     "ORDER BY nb_aime DESC")
     .then((result)=>{
@@ -65,7 +65,7 @@ module.exports = function(app, passport, pool) {
 	              "url_img,"+
 	              "informations,"+
 	              "ville,"+
-	              "adresse, prix from atelier "+
+	              "adresse, prix from atelier WHERE valide = TRUE "+
     "ORDER BY id DESC")
     .then((result)=>{
       console.log(result);
@@ -80,30 +80,32 @@ module.exports = function(app, passport, pool) {
   });
 
   app.get('/mesateliers', isLoggedIn, function(req, res, next) {
-    if (req.user.status != "Chef" || req.user.status != "Admin") {
+    if (req.user.status != "Chef" && req.user.status != "Admin") {
       res.redirect("/");
+    } else {
+      console.log("mdr");
+      pool.query("SELECT id," +
+  	              "nom,"+
+  	              "to_char(date, 'DD-MM-YYYY') as date,"+
+  	              "to_char(date, 'HH24hMI') as debut,"+
+  	              "to_char((date + duree), 'HH24hMI') as fin,"+
+  	              "url_img,"+
+  	              "informations,"+
+  	              "ville,"+
+  	              "adresse, prix from atelier "+
+                  "where id_compte = $1 "+
+      "ORDER BY id DESC", [req.user.id])
+      .then((result)=>{
+        console.log(result);
+        res.render('mesateliers.html', { title: 'Mes Ateliers', user: req.user, ateliers: result });
+      })
+      .catch((err)=>{
+        console.log(err);
+        res.redirect("/");
+        //done(new Error(`User with the id ${id} does not exist`));
+      })
     }
-    console.log("mdr");
-    pool.query("SELECT id," +
-	              "nom,"+
-	              "to_char(date, 'DD-MM-YYYY') as date,"+
-	              "to_char(date, 'HH24hMI') as debut,"+
-	              "to_char((date + duree), 'HH24hMI') as fin,"+
-	              "url_img,"+
-	              "informations,"+
-	              "ville,"+
-	              "adresse, prix from atelier "+
-                "where id_compte = $1 "+
-    "ORDER BY id DESC", [req.user.id])
-    .then((result)=>{
-      console.log(result);
-      res.render('mesateliers.html', { title: 'Mes Ateliers', user: req.user, ateliers: result });
-    })
-    .catch((err)=>{
-      console.log(err);
-      res.redirect("/");
-      //done(new Error(`User with the id ${id} does not exist`));
-    })
+
 
   });
 
@@ -162,7 +164,7 @@ module.exports = function(app, passport, pool) {
 	              "informations,"+
 	              "ville,"+
 	              "adresse, prix from atelier "+
-                "WHERE lower(nom) LIKE $1 " +
+                "WHERE lower(nom) LIKE $1 AND valide = TRUE " +
                 "ORDER BY " + comp + " DESC", [word])
     .then((result)=>{
       console.log(result);
@@ -189,7 +191,7 @@ module.exports = function(app, passport, pool) {
     console.log(comp);
     pool.query("SELECT id, nom, url_img, tmp_prep, count(*) AS nb_aime FROM recette " +
     "LEFT JOIN aimer ON aimer.id_recette = recette.id " +
-    "WHERE lower(nom) LIKE $1 " +
+    "WHERE lower(nom) LIKE $1 AND valide = TRUE " +
     "GROUP BY id, nom, url_img, tmp_prep " +
     "ORDER BY " + comp + " DESC", [word])
     .then((result)=>{
@@ -434,25 +436,28 @@ module.exports = function(app, passport, pool) {
         err.status = 404;
         next(err);
       }
-      console.log(recette);
-      pool.query("SELECT * FROM etape_recette WHERE id_recette = $1 ORDER BY n_etape ASC",
-        [req.params.id_recette])
-      .then((etapes)=>{
-        console.log(etapes);
-        pool.query("select commentaire.id, prenom, nom, id_compte, url_img, contenu from commentaire " +
-                  "join compte on id_compte = compte.id " +
-                  "where id_recette = $1 " +
-                  "order by commentaire.id ASC",
+      if (recette.rows[0].valide == false && req.user.status != "Admin") {
+        res.redirect('/recettes');
+      } else {
+        pool.query("SELECT * FROM etape_recette WHERE id_recette = $1 ORDER BY n_etape ASC",
           [req.params.id_recette])
-          .then((commentaire)=>{
-            console.log(commentaire);
-            pool.query("select * from aimer where id_recette = $1 and id_compte = $2",
-              [req.params.id_recette, req.user.id])
-            .then((aime)=>{
-              res.render('recettedetail.html', { title: 'Création de Recettes', user: req.user, recette_info: recette, recette_etapes: etapes, commentaires: commentaire, aimer: aime.rowCount });
+        .then((etapes)=>{
+          console.log(etapes);
+          pool.query("select commentaire.id, prenom, nom, id_compte, url_img, contenu from commentaire " +
+                    "join compte on id_compte = compte.id " +
+                    "where id_recette = $1 " +
+                    "order by commentaire.id ASC",
+            [req.params.id_recette])
+            .then((commentaire)=>{
+              console.log(commentaire);
+              pool.query("select * from aimer where id_recette = $1 and id_compte = $2",
+                [req.params.id_recette, req.user.id])
+              .then((aime)=>{
+                res.render('recettedetail.html', { title: 'Création de Recettes', user: req.user, recette_info: recette, recette_etapes: etapes, commentaires: commentaire, aimer: aime.rowCount });
+              })
             })
-          })
-      })
+        })
+      }
     })
     .catch((err)=>{
       console.log(err);
@@ -549,31 +554,108 @@ module.exports = function(app, passport, pool) {
   app.get('/donnees', isLoggedIn, function(req, res, next) {
     if (req.user.status != "Admin") {
       res.redirect("/");
+    } else {
+      console.log("mdr");
+      pool.query("select id, url_img, email, prenom, nom, adresse, pays, ville, code_postal, telephone, " +
+                  "case when token = 0 then 'Local' " +
+                  "when token = 1 then 'Facebook' " +
+                  "when token = 2 then 'Google+' end as token, status, " +
+                  "case when premium isnull then 'Non' " +
+                  "else premium::varchar(255) end as premium " +
+                  "from compte")
+      .then((compte)=>{
+        console.log(compte);
+        pool.query("select recette.id, recette.nom, concat(compte.prenom, ' ', compte.nom) as createur, recette.url_img, to_char(tmp_prep, 'HH24hMI'), nb_personne, to_char(date_creation, 'YYYY-MM-DD') as date_creation, case when valide = true then 'Oui' else 'Non' end as valide from recette " +
+                  "join compte on compte.id = id_compte")
+        .then((recette)=>{
+          console.log(recette);
+          pool.query("select atelier.id, atelier.nom, concat(compte.prenom, ' ', compte.nom) as createur, atelier.url_img, to_char(duree, 'HH24hMI'), nb_personne, to_char(date, 'YYYY-MM-DD') as date, case when valide = true then 'Oui' else 'Non' end as valide, informations, atelier.ville, atelier.adresse, atelier.code_postal, atelier.pays, prix from atelier " +
+                    "join compte on compte.id = id_compte")
+          .then((atelier)=>{
+            console.log(atelier);
+            res.render('donnees.html', { title: 'Données', user: req.user, comptes: compte, recettes: recette, ateliers: atelier });
+          });
+      })
+      .catch((err)=>{
+        console.log(err);
+        res.redirect("/");
+        //done(new Error(`User with the id ${id} does not exist`));
+      })
+      //res.render('moncompte.html', { title: 'Mon Compte', user: req.user });
+    });
     }
-    console.log("mdr");
-    pool.query("select id, url_img, email, prenom, nom, adresse, pays, ville, code_postal, telephone, " +
-                "case when token = 0 then 'Local' " +
-                "when token = 1 then 'Facebook' " +
-                "when token = 2 then 'Google+' end as token, status, " +
-                "case when premium isnull then 'Non' " +
-                "else premium::varchar(255) end as premium " +
-                "from compte")
-    .then((compte)=>{
-      console.log(compte);
-      pool.query("select recette.id, recette.nom, concat(compte.prenom, ' ', compte.nom) as createur, recette.url_img, to_char(tmp_prep, 'HH24hMI'), nb_personne, to_char(date_creation, 'YYYY-MM-DD') as date_creation, case when valide = true then 'Oui' else 'Non' end as valide from recette " +
-                "join compte on compte.id = id_compte")
-      .then((recette)=>{
-        console.log(recette);
-        res.render('donnees.html', { title: 'Données', user: req.user, comptes: compte, recettes: recette });
+
+});
+
+  app.post('/validerecette', function(req, res, next) {
+    console.log("Valide une recette...");
+    if (req.user.status != 'Admin') {
+      res.send("Error: Not an admin.");
+    } else {
+      pool.query("UPDATE recette SET valide = TRUE WHERE id = $1", [req.body.id])
+      .then((result)=>{
+        res.send("success");
+      })
+      .catch((err)=>{
+        console.log(err);
+        res.send("error");
+        //done(new Error(`User with the id ${id} does not exist`));
       });
-    })
-    .catch((err)=>{
-      console.log(err);
-      res.redirect("/");
-      //done(new Error(`User with the id ${id} does not exist`));
-    })
-    //res.render('moncompte.html', { title: 'Mon Compte', user: req.user });
+    }
+
   });
+
+  app.post('/validateatelier', function(req, res, next) {
+    console.log("Valide un Atelier...");
+    if (req.user.status != 'Admin') {
+      res.send("Error: Not an admin.");
+    } else {
+      pool.query("UPDATE atelier SET valide = TRUE WHERE id = $1", [req.body.id])
+      .then((result)=>{
+        res.send("success");
+      })
+      .catch((err)=>{
+        console.log(err);
+        res.send("error");
+        //done(new Error(`User with the id ${id} does not exist`));
+      })
+    }
+  });
+
+  app.post('/invaliderecette', function(req, res, next) {
+    console.log("Invalide une recette...");
+    if (req.user.status != 'Admin') {
+      res.send("Error: Not an admin.");
+    } else {
+      pool.query("UPDATE recette SET valide = FALSE WHERE id = $1", [req.body.id])
+      .then((result)=>{
+        res.send("success");
+      })
+      .catch((err)=>{
+        console.log(err);
+        res.send("error");
+        //done(new Error(`User with the id ${id} does not exist`));
+      })
+    }
+  });
+
+  app.post('/invalideatelier', function(req, res, next) {
+    console.log("Invalide un atelier...");
+    if (req.user.status != 'Admin') {
+      res.send("Error: Not an admin.");
+    } else {
+      pool.query("UPDATE atelier SET valide = FALSE WHERE id = $1", [req.body.id])
+      .then((result)=>{
+        res.send("success");
+      })
+      .catch((err)=>{
+        console.log(err);
+        res.send("error");
+        //done(new Error(`User with the id ${id} does not exist`));
+      })
+    }
+  });
+}
 
 
 
@@ -584,7 +666,6 @@ module.exports = function(app, passport, pool) {
 });*/
 
 //==============================================================================
-}
 
 // Vérification de la connection
 
