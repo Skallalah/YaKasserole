@@ -80,6 +80,9 @@ module.exports = function(app, passport, pool) {
   });
 
   app.get('/mesateliers', isLoggedIn, function(req, res, next) {
+    if (req.user.status != "Chef" || req.user.status != "Admin") {
+      res.redirect("/");
+    }
     console.log("mdr");
     pool.query("SELECT id," +
 	              "nom,"+
@@ -541,6 +544,35 @@ module.exports = function(app, passport, pool) {
     else {
       res.send("success")
     }
+  });
+
+  app.get('/donnees', isLoggedIn, function(req, res, next) {
+    if (req.user.status != "Admin") {
+      res.redirect("/");
+    }
+    console.log("mdr");
+    pool.query("select id, url_img, email, prenom, nom, adresse, pays, ville, code_postal, telephone, " +
+                "case when token = 0 then 'Local' " +
+                "when token = 1 then 'Facebook' " +
+                "when token = 2 then 'Google+' end as token, status, " +
+                "case when premium isnull then 'Non' " +
+                "else premium::varchar(255) end as premium " +
+                "from compte")
+    .then((compte)=>{
+      console.log(compte);
+      pool.query("select recette.id, recette.nom, concat(compte.prenom, ' ', compte.nom) as createur, recette.url_img, to_char(tmp_prep, 'HH24hMI'), nb_personne, to_char(date_creation, 'YYYY-MM-DD') as date_creation, case when valide = true then 'Oui' else 'Non' end as valide from recette " +
+                "join compte on compte.id = id_compte")
+      .then((recette)=>{
+        console.log(recette);
+        res.render('donnees.html', { title: 'Données', user: req.user, comptes: compte, recettes: recette });
+      });
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.redirect("/");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+    //res.render('moncompte.html', { title: 'Mon Compte', user: req.user });
   });
 
 

@@ -154,7 +154,7 @@
                 <a href="/mesrecettes">Mes recettes</a>
               </li>
               <% if (typeof user != 'undefined' ) { %>
-                <% if (user.status == "Chef") { %>
+                <% if (user.status == "Chef" || user.status == "Admin") { %>
                   <li>
                     <a href="/mesateliers">Mes ateliers</a>
                   </li>
@@ -163,6 +163,13 @@
               <li>
                 <a href="/moncompte">Mon profil</a>
               </li>
+              <% if (typeof user != 'undefined' ) { %>
+                <% if (user.status == "Admin") { %>
+                  <li>
+                    <a href="/donnees">Données</a>
+                  </li>
+                <% } %>
+              <% } %>
               <li>
                 <a href="/logout">Se déconnecter</a>
               </li>
@@ -242,7 +249,7 @@
                         <h2> Que proposons-nous ?</h2>
                         <p> YaKasserole propose des ateliers cuisine. Contactez-nous et réservez un atelier pour apprendre la cuisine.
                           Devenez un as de la cuisine et impressionez votre famille et vos amis ! </p>
-                          <p> Vous pouvez également accéder à nos recettes, conseillées par nos membres de la communauté. Rejoignez-la
+                          <p> Vous pouvez également accéder à nos recettes, conseillées par nos membres de la communauté. Rejoignez-la ! </p>
                           </div>
                           <div class="col-sm-5">
                             <img src="/pot.jpg" width="500" height="340" class="img-responsive">

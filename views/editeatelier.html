@@ -55,7 +55,7 @@
           <a href="/mesrecettes">Mes recettes</a>
         </li>
         <% if (typeof user != 'undefined' ) { %>
-          <% if (user.status == "Chef") { %>
+          <% if (user.status == "Chef" || user.status == "Admin") { %>
             <li>
               <a href="/mesateliers">Mes ateliers</a>
             </li>
@@ -64,6 +64,13 @@
         <li>
           <a href="/moncompte">Mon profil</a>
         </li>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Admin") { %>
+            <li>
+              <a href="/donnees">Données</a>
+            </li>
+          <% } %>
+        <% } %>
         <li>
           <a href="/logout">Se déconnecter</a>
         </li>
