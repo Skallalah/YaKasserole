@@ -107,6 +107,7 @@ CREATE TABLE etape_recette (
 CREATE TABLE inscrit (
     id_compte int  NOT NULL,
     id_atelier int  NOT NULL,
+    nb int NOT NULL,
     CONSTRAINT inscrit_pk PRIMARY KEY (id_compte,id_atelier)
 );
 
@@ -357,6 +358,87 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION HAS_PLACE(id_atelier_ INT, nb_ INT)
+       RETURNS boolean AS
+$$
+DECLARE nb_inscrit INT;
+BEGIN
+        PERFORM * from atelier where atelier.id = id_atelier_;
+        IF found = FALSE THEN
+          RETURN 0;
+        END IF;
+        SELECT count(nb) INTO nb_inscrit FROM inscrit WHERE id_atelier = id_atelier_;
+        PERFORM * from atelier where atelier.id = id_atelier_;
+        RETURN ((SELECT nb_personne FROM atelier WHERE atelier.id = id_atelier_) >= (nb_inscrit + nb_));
+        EXCEPTION
+        WHEN OTHERS THEN RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION GET_PRICE(id_atelier_ INT, id_member_ INT)
+       RETURNS MONEY AS
+$$
+DECLARE price_ MONEY;
+BEGIN
+        SELECT prix INTO price_ FROM atelier WHERE atelier.id = id_atelier_;
+        IF (SELECT premium from compte where id = id_member_) >= now() THEN
+          RETURN (price_ - price_/10);
+        ELSE
+          RETURN price_;
+        END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION INSCRIPTION(id_atelier_ INT, id_member_ INT, nb_ INT)
+       RETURNS INT AS
+$$
+BEGIN
+        IF (SELECT HAS_PLACE(id_atelier_, nb_)) = FALSE THEN
+          RETURN 0;
+        END IF;
+        PERFORM * from atelier where atelier.id = id_atelier_;
+        IF found = FALSE THEN
+          RETURN 0;
+        END IF;
+        INSERT INTO transaction
+        VALUES (id_member_, id_atelier_, now(), nb_ * (SELECT GET_PRICE(id_atelier_, id_member_)));
+        INSERT INTO inscrit
+        VALUES (id_member_, id_atelier_, nb_);
+        RETURN 1;
+        EXCEPTION
+        WHEN OTHERS THEN RETURN 2;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION IS_PREMIUM(id_member_ INT)
+       RETURNS varchar(255) AS
+$$
+DECLARE premium_ date;
+BEGIN
+        SELECT premium INTO premium_ FROM compte WHERE id = id_member_;
+        IF (premium_ >= now()) THEN
+          RETURN to_char(premium_, 'DD-MM-YYYY');
+        ELSE
+          RETURN NULL;
+        END IF;
+        EXCEPTION
+        WHEN OTHERS THEN RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION PAY_PREMIUM(id_member_ INT)
+       RETURNS void AS
+$$
+DECLARE premium_ date;
+BEGIN
+        UPDATE compte
+        SET premium = now() + interval '30 days'
+        WHERE id = id_member_;
+        INSERT INTO transaction
+        VALUES (id_member_, NULL, now(), 12);
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION REMOVE_COMMENT(id_comment_ int, id_compte_ int)
        RETURNS INT AS
 $$
@@ -444,6 +526,21 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION REMOVE_RECETTE(id_recette_ INT)
+       RETURNS void AS
+$$
+BEGIN
+        DELETE FROM commentaire
+        WHERE id_recette = id_recette_;
+        DELETE FROM etape_recette
+        WHERE id_recette = id_recette_;
+        DELETE FROM aimer
+        WHERE id_recette = id_recette_;
+        DELETE FROM recette
+        WHERE id = id_recette_;
+END;
+$$ LANGUAGE plpgsql;
+
 /* là je suis plus trop sur */
 
 CREATE OR REPLACE FUNCTION ADD_ETAPE_IN_RECETTE(id_recette_ INT, id_etape_ INT)
@@ -506,3 +603,22 @@ BEGIN
         WHEN OTHERS THEN RETURN 2;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE VIEW compte_crees AS
+  select count(*) as total_compte from compte;
+
+CREATE OR REPLACE VIEW compte_premium AS
+  select count(*) as nb_premium from compte where is_premium(id) IS NOT NULL;
+
+CREATE OR REPLACE VIEW meilleur_chef AS
+  select nom as meilleur_chef from (select atelier.id, concat(compte.prenom, ' ', compte.nom) as nom, sum(prix) as total from inscrit
+  join atelier on id_atelier = atelier.id
+  join compte on atelier.id_compte = compte.id
+  group by atelier.id, atelier.nom, compte.prenom, compte.nom order by total desc
+  limit 1) as sub;
+
+CREATE OR REPLACE VIEW meilleur_membre AS
+  select nom as meilleur_membre from (select recette.id, concat(compte.prenom, ' ', compte.nom) as nom, count(*) as total from recette
+  join compte on id_compte = compte.id
+  group by recette.id, compte.nom, compte.prenom, compte.nom order by total desc
+  limit 1) as sub;

@@ -66,9 +66,16 @@
           <a href="/moncompte">Mon profil</a>
         </li>
         <% if (typeof user != 'undefined' ) { %>
-          <% if (user.status == "Admin") { %>
+          <% if (user.status == "Admin" || user.status == "Responsable Atelier" || user.status == "Responsable Recette") { %>
             <li>
               <a href="/donnees">Données</a>
+            </li>
+          <% } %>
+        <% } %>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Membre") { %>
+            <li>
+              <a href="/mesreservations">Mes réservations</a>
             </li>
           <% } %>
         <% } %>
@@ -79,8 +86,10 @@
     </div>
     <div id="page-content-wrapper">
       <div class="container-fluid container-main" style="margin: 20px">
-
+          <% if (typeof user != 'undefined' ) { %>
+            <% if (user.status == "Admin") { %>
             <div class="row">
+
               <h1>Comptes</h1>
 
               <table id="example" class="table  table-hover" cellspacing="0" width="100%">
@@ -107,7 +116,11 @@
             </div>
 
             <hr class="featurette-divider">
+            <% } %>
+          <% } %>
 
+          <% if (typeof user != 'undefined' ) { %>
+            <% if (user.status == "Admin" || user.status == "Responsable Recette") { %>
             <div class="row">
               <h1>Recettes</h1>
 
@@ -122,14 +135,21 @@
                     <th>Nombres de personnes</th>
                     <th>Date de création</th>
                     <th>Validée</th>
+                    <th>Edition</th>
                   </tr>
                 </thead>
                 <tbody id="tableRecette">
                 </tbody>
               </table>
             </div>
+            <% } %>
+          <% } %>
 
+          <% if (typeof user != 'undefined' ) { %>
+            <% if (user.status == "Admin" || user.status == "Responsable Atelier") { %>
             <hr class="featurette-divider">
+
+
 
             <div class="row">
               <h1>Ateliers</h1>
@@ -154,6 +174,8 @@
                 </tbody>
               </table>
             </div>
+            <% } %>
+          <% } %>
 
           </div>
           <hr class="featurette-divider">
@@ -182,9 +204,12 @@
           "<td>" + comptes[iter].code_postal + "</td>" +
           "<td>" + comptes[iter].telephone + "</td>" +
           "<td>" + comptes[iter].token + "</td>" +
-          "<td>" + comptes[iter].status + "</td>" +
+          "<td><select class=\"form-control squared\" id=\"sel" + comptes[iter].id + "\" onchange=\"update(" + comptes[iter].id + ")\">" +
+          "<option>Admin</option><option>Membre</option><option>Chef</option><option>Responsable Atelier</option><option>Responsable Recette</option>" +
+          "</select></td>" +
           "<td>" + comptes[iter].premium + "</td></tr>"
           $("#tableCompte").append(res);
+          $('#sel' + comptes[iter].id).val(comptes[iter].status);
         }
 
           var nbrecettes = <%= recettes.rowCount %>;
@@ -198,10 +223,11 @@
             "<td>" + recettes[iter].nb_personne + "</td>" +
             "<td>" + recettes[iter].date_creation + "</td>";
             if (recettes[iter].valide == 'Oui') {
-              res = res + "<td>" + "<button class=\"btn-primary btn-green squared\"><span class=\"glyphicon glyphicon-ok\" onclick=\"invalidate(" + recettes[iter].id + ")\"></span></button>" + "</td></tr>";
+              res = res + "<td>" + "<button class=\"btn-primary btn-red squared\"><span class=\"glyphicon glyphicon-remove\" onclick=\"invalidate(" + recettes[iter].id + ")\"></span></button>" + "</td>";
             } else {
-              res = res + "<td>" + "<button class=\"btn-primary btn-red squared\"><span class=\"glyphicon glyphicon-remove\" onclick=\"validate(" + recettes[iter].id + ")\"></span></button>" + "</td></tr>";
+              res = res + "<td>" + "<button class=\"btn-primary btn-green squared\"><span class=\"glyphicon glyphicon-ok\" onclick=\"validate(" + recettes[iter].id + ")\"></span></button>" + "</td>";
             }
+            res = res + "<td>" + "<button class=\"btn-primary btn-red squared\" onclick=\"supprimer(" + recettes[iter].id + ")\">Supprimer</button></td></tr>";
             $("#tableRecette").append(res);
         }
 
@@ -219,9 +245,9 @@
           "<td>" + ateliers[iter].adresse + "</td>" +
           "<td>" + ateliers[iter].prix + "</td>";
           if (ateliers[iter].valide == 'Oui') {
-            res = res + "<td>" + "<button class=\"btn-primary btn-green squared\"><span class=\"glyphicon glyphicon-ok\" onclick=\"invalidateatelier(" + ateliers[iter].id + ")\"></span></button>" + "</td></tr>";
+            res = res + "<td>" + "<button class=\"btn-primary btn-red squared\"><span class=\"glyphicon glyphicon-remove\" onclick=\"invalidateatelier(" + ateliers[iter].id + ")\"></span></button>" + "</td></tr>";
           } else {
-            res = res + "<td>" + "<button class=\"btn-primary btn-red squared\"><span class=\"glyphicon glyphicon-remove\" onclick=\"validateatelier(" + ateliers[iter].id + ")\"></span></button>" + "</td></tr>";
+            res = res + "<td>" + "<button class=\"btn-primary btn-green squared\"><span class=\"glyphicon glyphicon-ok\" onclick=\"validateatelier(" + ateliers[iter].id + ")\"></span></button>" + "</td></tr>";
           }
           $("#tableAtelier").append(res);
         }
@@ -345,6 +371,28 @@
       },
       function() {
         location.reload();
+      });
+    }
+
+    function supprimer(id_) {
+      $.post("/supprimerrecette",
+      {
+        id: id_
+      },
+      function() {
+        location.reload();
+      });
+    }
+
+    function update(id_) {
+      $('#sel' + id_).prop('disabled', true);
+      $.post("/changerang",
+      {
+        id_user: id_,
+        rang: document.getElementById("sel" + id_).value
+      },
+      function() {
+        $('#sel' + id_).prop('disabled', false);
       });
     }
   </script>

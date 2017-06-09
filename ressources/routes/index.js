@@ -65,8 +65,8 @@ module.exports = function(app, passport, pool) {
 	              "url_img,"+
 	              "informations,"+
 	              "ville,"+
-	              "adresse, GET_PRICE(id, $1) as prix from atelier WHERE valide = TRUE AND date >= now() AND atelier.id NOT IN (SELECT id_atelier FROM inscrit WHERE id_compte = $1) "+
-    "ORDER BY id DESC", [req.user.id])
+	              "adresse, prix from atelier WHERE valide = TRUE AND date >= now() "+
+    "ORDER BY id DESC")
     .then((result)=>{
       console.log(result);
       res.render('ateliers.html', { title: 'Ateliers', user: req.user, ateliers: result });
@@ -109,22 +109,16 @@ module.exports = function(app, passport, pool) {
 
   });
 
-  app.post('/recherchemesateliers', isLoggedIn, function(req, res, next) {
+  app.post('/recherchemesateliers', function(req, res, next) {
     console.log("recherche mes atelier...");
     var comp = "";
     var word = "%" + req.body.text + "%";
-    var ord = "";
     if (req.body.ordre == "Prix") {
       comp = "prix";
     } else if (req.body.ordre == "Temps") {
       comp = "duree";
     } else {
       comp = "nom";
-    }
-    if (req.body.dir == "Ordre Ascendant") {
-      ord = "ASC";
-    } else {
-      ord = "DESC";
     }
     console.log(comp);
     pool.query("SELECT id," +
@@ -137,7 +131,7 @@ module.exports = function(app, passport, pool) {
 	              "ville,"+
 	              "adresse, prix from atelier "+
                 "WHERE lower(nom) LIKE $1 AND id_compte = $2 " +
-                "ORDER BY " + comp + " " + ord, [word, req.user.id])
+                "ORDER BY " + comp + " DESC", [word, req.user.id])
     .then((result)=>{
       console.log(result);
       res.send(result);
@@ -149,92 +143,16 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.get('/mesreservations', isLoggedIn, function(req, res, next) {
-    console.log("mdr");
-    if (req.user.status != "Membre") {
-      res.redirect("/");
-    } else {
-      pool.query("SELECT id," +
-    	              "nom,"+
-    	              "to_char(date, 'DD-MM-YYYY') as date,"+
-    	              "to_char(date, 'HH24hMI') as debut,"+
-    	              "to_char((date + duree), 'HH24hMI') as fin,"+
-    	              "url_img,"+
-    	              "informations,"+
-    	              "ville,"+
-    	              "adresse, prix, nb from atelier "+
-                    "JOIN inscrit ON inscrit.id_atelier = id " +
-                    "where inscrit.id_compte = $1 "+
-        "ORDER BY id DESC", [req.user.id])
-        .then((result)=>{
-          console.log(result);
-          res.render('mesreservations.html', { title: 'Mes Réservations', user: req.user, ateliers: result });
-        })
-        .catch((err)=>{
-          console.log(err);
-          res.redirect("/");
-          //done(new Error(`User with the id ${id} does not exist`));
-        })
-      }
-  });
-
-  app.post('/recherchemesreservations', isLoggedIn, function(req, res, next) {
-    console.log("recherche mes réservations...");
-    var comp = "";
-    var word = "%" + req.body.text + "%";
-    var ord = "";
-    if (req.body.ordre == "Prix") {
-      comp = "prix";
-    } else if (req.body.ordre == "Temps") {
-      comp = "duree";
-    } else {
-      comp = "nom";
-    }
-    if (req.body.dir == "Ordre Ascendant") {
-      ord = "ASC";
-    } else {
-      ord = "DESC";
-    }
-    console.log(comp);
-    pool.query("SELECT id," +
-	              "nom,"+
-	              "to_char(date, 'DD-MM-YYYY') as date,"+
-	              "to_char(date, 'HH24hMI') as debut,"+
-	              "to_char((date + duree), 'HH24hMI') as fin,"+
-	              "url_img,"+
-	              "informations,"+
-	              "ville,"+
-	              "adresse, prix, nb from atelier "+
-                "JOIN inscrit ON inscrit.id_atelier = id " +
-                "WHERE lower(nom) LIKE $1 AND inscrit.id_compte = $2 " +
-                "ORDER BY " + comp + " " + ord, [word, req.user.id])
-    .then((result)=>{
-      console.log(result);
-      res.send(result);
-    })
-    .catch((err)=>{
-      console.log(err);
-      res.send("error");
-      //done(new Error(`User with the id ${id} does not exist`));
-    })
-  });
-
-  app.post('/rechercheatelier', isLoggedIn, function(req, res, next) {
+  app.post('/rechercheatelier', function(req, res, next) {
     console.log("recherche atelier...");
     var comp = "";
     var word = "%" + req.body.text + "%";
-    var ord = "";
     if (req.body.ordre == "Prix") {
       comp = "prix";
     } else if (req.body.ordre == "Temps") {
       comp = "duree";
     } else {
       comp = "nom";
-    }
-    if (req.body.dir == "Ordre Ascendant") {
-      ord = "ASC";
-    } else {
-      ord = "DESC";
     }
     console.log(comp);
     pool.query("SELECT id," +
@@ -245,9 +163,9 @@ module.exports = function(app, passport, pool) {
 	              "url_img,"+
 	              "informations,"+
 	              "ville,"+
-	              "adresse, GET_PRICE(id, $2) as prix from atelier "+
-                "WHERE lower(nom) LIKE $1 AND valide = TRUE AND date >= now() AND atelier.id NOT IN (SELECT id_atelier FROM inscrit WHERE id_compte = $1) "+
-                "ORDER BY " + comp + " " + ord, [word, req.user.id])
+	              "adresse, prix from atelier "+
+                "WHERE lower(nom) LIKE $1 AND valide = TRUE AND date >= now() " +
+                "ORDER BY " + comp + " DESC", [word])
     .then((result)=>{
       console.log(result);
       res.send(result);
@@ -259,11 +177,10 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.post('/rechercherecette', isLoggedIn, function(req, res, next) {
+  app.post('/rechercherecette', function(req, res, next) {
     console.log("recherche recette...");
     var comp = "";
     var word = "%" + req.body.text + "%";
-    var ord = "";
     if (req.body.ordre == "Approbation") {
       comp = "nb_aime";
     } else if (req.body.ordre == "Temps") {
@@ -271,17 +188,12 @@ module.exports = function(app, passport, pool) {
     } else {
       comp = "nom";
     }
-    if (req.body.dir == "Ordre Ascendant") {
-      ord = "ASC";
-    } else {
-      ord = "DESC";
-    }
     console.log(comp);
     pool.query("SELECT id, nom, url_img, tmp_prep, count(*) AS nb_aime FROM recette " +
     "LEFT JOIN aimer ON aimer.id_recette = recette.id " +
     "WHERE lower(nom) LIKE $1 AND valide = TRUE " +
     "GROUP BY id, nom, url_img, tmp_prep " +
-    "ORDER BY " + comp + " " + ord, [word])
+    "ORDER BY " + comp + " DESC", [word])
     .then((result)=>{
       console.log(result);
       res.send(result);
@@ -317,11 +229,7 @@ module.exports = function(app, passport, pool) {
   });
 
   app.get('/editeatelier', isLoggedIn, function(req, res, next) {
-    if (req.user.status == "Chef") {
-      res.render('editeatelier.html', { title: 'Création d\'Ateliers', user: req.user });
-    } else {
-      res.redirect("/");
-    }
+    res.render('editeatelier.html', { title: 'Création d\'Ateliers', user: req.user });
   });
 
   app.get('/moncompte', isLoggedIn, function(req, res, next) {
@@ -369,7 +277,7 @@ module.exports = function(app, passport, pool) {
         failureRedirect : '/'
     }));
 
-  app.post('/signup', isLoggedIn, function(req, res, next) {
+  app.post('/signup', function(req, res, next) {
     console.log("signup...");
     pool.query("SELECT add_membre($1, $2, NULL, $3, $4, $5, $6, \'000000\', $7, $8, \'Membre\', 0)",
       [req.body.email,
@@ -396,7 +304,7 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.post('/modification', isLoggedIn, function(req, res, next) {
+  app.post('/modification', function(req, res, next) {
     console.log("signup...");
     console.log(req.user.id);
     if (req.body.adresse == "") { req.body.adresse = null; }
@@ -435,7 +343,7 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.post('/ajoutrecette', isLoggedIn, function(req, res, next) {
+  app.post('/ajoutrecette', function(req, res, next) {
     console.log("signup...");
     console.log(req.body.json);
     var text = req.body.json;
@@ -475,7 +383,7 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.post('/ajoutatelier', isLoggedIn, function(req, res, next) {
+  app.post('/ajoutatelier', function(req, res, next) {
     console.log("signup...");
     console.log(req.body.json);
     var text = req.body.json;
@@ -558,7 +466,7 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.post('/supprimecommentaire', isLoggedIn, function(req, res, next) {
+  app.post('/supprimecommentaire', function(req, res, next) {
     console.log("Supprimer commentaire...");
     pool.query("SELECT REMOVE_COMMENT($1, $2)",
       [req.body.idcomment, req.user.id])
@@ -572,7 +480,7 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.post('/creercommentaire', isLoggedIn, function(req, res, next) {
+  app.post('/creercommentaire', function(req, res, next) {
     console.log("Ajouter commentaire...");
     pool.query("SELECT ADD_COMMENT($1, $2, $3)",
       [req.body.idrecette, req.user.id, req.body.text])
@@ -587,7 +495,7 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.post('/editecommentaire', isLoggedIn, function(req, res, next) {
+  app.post('/editecommentaire', function(req, res, next) {
     console.log("Modifier commentaire...");
     pool.query("SELECT UPDATE_COMMENT($1, $2, $3)",
       [req.body.idcomment, req.user.id, req.body.text])
@@ -601,7 +509,7 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.post('/aimerrecette', isLoggedIn, function(req, res, next) {
+  app.post('/aimerrecette', function(req, res, next) {
     console.log("Ajouter un j'aime...");
     pool.query("SELECT ADD_AIME($1, $2)",
       [req.user.id, req.body.idrecette])
@@ -615,7 +523,7 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-  app.post('/plusaimerrecette', isLoggedIn, function(req, res, next) {
+  app.post('/plusaimerrecette', function(req, res, next) {
     console.log("Enlever l'aime...");
     pool.query("SELECT REMOVE_AIME($1, $2)",
       [req.user.id, req.body.idrecette])
@@ -633,18 +541,18 @@ module.exports = function(app, passport, pool) {
     res.render('nouscontacter.html', { title: 'Nous Contacter', user : req.user });
   });
 
-  app.post('/contacter', isLoggedIn, function(req, res, next) {
+  app.post('/contacter', function(req, res, next) {
     console.log("Contact...");
     if (sendmail(req.body.prenom, req.body.nom, req.body.email, 'serviceyakasserole@gmail.com', req.body.objet, req.body.message) == 1) {
       res.send("success");
     }
     else {
-      res.send("error")
+      res.send("success")
     }
   });
 
   app.get('/donnees', isLoggedIn, function(req, res, next) {
-    if (req.user.status != "Admin" && req.user.status != "Responsable Recette" && req.user.status != "Responsable Atelier") {
+    if (req.user.status != "Admin") {
       res.redirect("/");
     } else {
       console.log("mdr");
@@ -679,7 +587,7 @@ module.exports = function(app, passport, pool) {
 
 });
 
-  app.post('/validerecette', isLoggedIn, function(req, res, next) {
+  app.post('/validerecette', function(req, res, next) {
     console.log("Valide une recette...");
     if (req.user.status != 'Admin') {
       res.send("Error: Not an admin.");
@@ -697,7 +605,7 @@ module.exports = function(app, passport, pool) {
 
   });
 
-  app.post('/validateatelier', isLoggedIn, function(req, res, next) {
+  app.post('/validateatelier', function(req, res, next) {
     console.log("Valide un Atelier...");
     if (req.user.status != 'Admin') {
       res.send("Error: Not an admin.");
@@ -714,7 +622,7 @@ module.exports = function(app, passport, pool) {
     }
   });
 
-  app.post('/invaliderecette', isLoggedIn, function(req, res, next) {
+  app.post('/invaliderecette', function(req, res, next) {
     console.log("Invalide une recette...");
     if (req.user.status != 'Admin') {
       res.send("Error: Not an admin.");
@@ -731,7 +639,7 @@ module.exports = function(app, passport, pool) {
     }
   });
 
-  app.post('/invalideatelier', isLoggedIn, function(req, res, next) {
+  app.post('/invalideatelier', function(req, res, next) {
     console.log("Invalide un atelier...");
     if (req.user.status != 'Admin') {
       res.send("Error: Not an admin.");
@@ -747,84 +655,6 @@ module.exports = function(app, passport, pool) {
       })
     }
   });
-
-  app.post('/reserveatelier', isLoggedIn, function(req, res, next) {
-    console.log("Reservation en cours...");
-    var message = "Bonjour " + req.user.prenom  + " " + req.user.nom + "!\n" +
-    "Nous confirmons la réception de votre paiement pour votre réservation d'atelier.\n" +
-    "N'hésitez pas à visiter notre site pour plus d'informations sur la date et le lieu prévu !";
-      pool.query("SELECT inscription($1, $2, $3)", [req.body.id_atelier, req.user.id, req.body.nb])
-      .then((result)=>{
-        console.log(result);
-        if (result.rows[0].inscription == 1) {
-          res.send("success");
-          sendmail(req.user.prenom, req.user.nom, req.user.email, 'serviceyakasserole@gmail.com', "Réservation atelier", message);
-        } else {
-          res.send("Cette atelier ne comporte pas assez de place pour votre réservation.");
-        }
-      })
-      .catch((err)=>{
-        console.log(err);
-        res.send("Erreur: veuillez réessayer ultèrieurement");
-        //done(new Error(`User with the id ${id} does not exist`));
-      })
-  });
-
-  app.post('/premium', isLoggedIn, function(req, res, next) {
-    console.log("Paiement premium en cours...");
-    var message = "Bonjour " + req.user.prenom  + " " + req.user.nom + "!\n" +
-    "Nous confirmons la réception de votre paiement pour votre abonnement premium d'un durée de 30 jours.\n" +
-    "N'hésitez pas à visiter notre site pour plus profiter de vos avantages exclusifs !";
-      pool.query("SELECT pay_premium($1)", [req.user.id])
-      .then((result)=>{
-        console.log(result);
-        res.send("success");
-        sendmail(req.user.prenom, req.user.nom, req.user.email, 'serviceyakasserole@gmail.com', "Réservation atelier", message);
-
-      })
-      .catch((err)=>{
-        console.log(err);
-        res.send("Erreur: veuillez réessayer ultèrieurement");
-        //done(new Error(`User with the id ${id} does not exist`));
-      })
-  });
-
-  app.post('/supprimerrecette', isLoggedIn, function(req, res, next) {
-    console.log("Suppresion de recettes...");
-    if (req.user.status != "Admin" && req.user.status != "Responsable Recette") {
-      res.redirect("/")
-    } else {
-      pool.query("SELECT remove_recette($1)", [req.body.id])
-      .then((result)=>{
-        console.log(result);
-        res.send("success");
-      })
-      .catch((err)=>{
-        console.log(err);
-        res.send("Erreur: veuillez réessayer ultèrieurement");
-        //done(new Error(`User with the id ${id} does not exist`));
-      })
-    }
-  });
-
-  app.post('/changerang', isLoggedIn, function(req, res, next) {
-    console.log("Changement de rang...");
-    if (req.user.status != "Admin") {
-      res.redirect("/")
-    } else {
-      pool.query("UPDATE compte SET status = $1 WHERE id = $2", [req.body.rang, req.body.id_user])
-      .then((result)=>{
-        console.log(result);
-        res.send("success");
-      })
-      .catch((err)=>{
-        console.log(err);
-        res.send("Erreur: veuillez réessayer ultèrieurement");
-        //done(new Error(`User with the id ${id} does not exist`));
-      })
-    }
-  });
-
 }
 
 

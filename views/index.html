@@ -164,9 +164,16 @@
                 <a href="/moncompte">Mon profil</a>
               </li>
               <% if (typeof user != 'undefined' ) { %>
-                <% if (user.status == "Admin") { %>
+                <% if (user.status == "Admin" || user.status == "Responsable Atelier" || user.status == "Responsable Recette") { %>
                   <li>
                     <a href="/donnees">Données</a>
+                  </li>
+                <% } %>
+              <% } %>
+              <% if (typeof user != 'undefined' ) { %>
+                <% if (user.status == "Membre") { %>
+                  <li>
+                    <a href="/mesreservations">Mes réservations</a>
                   </li>
                 <% } %>
               <% } %>
@@ -197,7 +204,7 @@
                       </div>
                     </div>
                     <div class="item">
-                      <a href="#">
+                      <a href="/ateliers">
                         <img class="img-responsive center-block" src="atelier.jpg" alt="Chania">
                       </a>
                       <div class="carousel-caption d-none d-md-block text-left">

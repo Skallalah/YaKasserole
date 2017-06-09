@@ -1,6 +1,8 @@
 <% include layout.html %>
 <link rel="stylesheet" type="text/css" href="/css/recette.css">
+<link rel="stylesheet" type="text/css" href="/css/roundbutton.css">
 </head>
+
 <body>
 
   <nav class="navbar navbar-inverse navbar-static-top navbar-fixed-top">
@@ -85,16 +87,15 @@
     <div id="page-content-wrapper">
       <div class="container-fluid container-main" style="margin: 20px">
         <div class="row">
-          <h1> Vos recettes </h1>
+          <h1>Vos Réservations</h1>
         </div>
-
         <div class="row row-10">
           <div class="col-md-6">
 
             <div class="input-group">
-              <input type="text" class="form-control squared" placeholder="Rechercher...">
+              <input id="search" type="text" class="form-control squared" placeholder="Rechercher...">
               <div class="input-group-btn">
-                <button class="btn btn-default squared" type="submit">
+                <button id="searchButton" class="btn btn-default squared" type="submit" onclick="search()">
                   <i class="glyphicon glyphicon-search"></i>
                 </button>
               </div>
@@ -104,12 +105,13 @@
           <div class="col-md-3">
             <div class="form-group">
               <select class="form-control squared" id="sel1">
-                <option>Approbation</option>
+                <option>Prix</option>
                 <option>Temps</option>
                 <option>Alphabétique</option>
               </select>
             </div>
           </div>
+
           <div class="col-md-3">
             <div class="form-group">
               <select class="form-control squared" id="sel2">
@@ -119,41 +121,132 @@
             </div>
           </div>
         </div>
-        <div class="row row-10" id="recettesTable">
+        <div id="grid" class="row row-10">
+
+          <hr class="featurette-divider">
+          <div id="loader" class="loader center-div hidden"></div>
+          <div id="gridContent">
+
+          </div>
+        </div>
 
       </div>
+      <hr class="featurette-divider">
+      <footer class="container-fluid text-center">
+        <p class="float-right"> © Copyright YaKasserole 2017. <a href="/nouscontacter">Nous contacter</a></p>
+      </footer>
     </div>
-    <hr class="featurette-divider">
-    <footer class="container-fluid text-center">
-      <p class="float-right"> © Copyright YaKasserole 2017. <a href="/nouscontacter">Nous contacter</a></p>
-    </footer>
+
 
 
   </div>
 
   <script>
-    var recettesSize = <%= recettes.rowCount %>;
-    var recettes = <%- JSON.stringify(recettes.rows) %>;
-    for (var iter = 0; iter < recettesSize; iter++) {
+    var ateliersSize = <%= ateliers.rowCount %>;
+    var ateliers = <%- JSON.stringify(ateliers.rows) %>;
+    for (var iter = 0; iter < ateliersSize; iter++) {
 
-      var res = "<div id=\"first\" class=\"col-md-3 col-sm-4 col-xs-12\">" +
-        "<div class=\"recette-container\">" +
-        "<img class=\"img-responsive image\" src=\"";
-      if (recettes[iter].url_img == null) {
-        res = res + "https://fakeimg.pl/1920x1080/";
+
+      var res = "<div class=\"col-md-12\">" +
+        "<div class=\"panel panel-default\" style=\"border-radius: 20px\">" +
+        "<div class=\"panel-body\">" +
+        "<div class=\"row\">" +
+        "<div class=\"col-sm-3\">" +
+        "<img src=\"";
+      if (ateliers[iter].url_img == null) {
+        res = res + "https://fakeimg.pl/500x350/";
       } else {
-        res = res + recettes[iter].url_img;
+        res = res + ateliers[iter].url_img;
       }
-      res = res + "\"/>" +
-          "<div class=\"middle\">" +
-            "<div class=\"text\">" + recettes[iter].nom + "</div>" +
-            "<div class=\"text-time\">" + recettes[iter].tmp_prep + "</div>" +
-            "<p style=\"color: white; font-size: 1.5em; font-weight: bold; text-align: left;\"><span class=\"glyphicon glyphicon-heart\" aria-hidden=\"true\"></span> " +
-            recettes[iter].nb_aime + "</p></div></div></div>";
-      $("#recettesTable").append(res);
+      res = res + "\" class=\"img-responsive\">" +
+      "</div>" +
+      "<div class=\"col-sm-9\">" +
+      "<h1>" + ateliers[iter].nom + "</h1>" +
+      "<h3>" + ateliers[iter].date + " - de " + ateliers[iter].debut + " à " + ateliers[iter].fin + "</h3>" +
+      "<h3>" + ateliers[iter].ville + " - " + ateliers[iter].adresse + "</h3>" +
+      "<h3>Pour " + ateliers[iter].nb + " personne(s)</h3>" +
+      "</div>" +
+      "</div>" +
+      "<div class=\"row\">" +
+      "<div class=\"col-md-12\">" +
+      "<div class=\"text-center\">" +
+      "<span class=\"glyphicon glyphicon-chevron-down\" aria-hidden=\"true\" style=\"font-size: 15px; cursor: pointer;\" data-toggle=\"collapse\" data-target=\"#collapse" + iter + "\"></span></h1>" +
+      "</div>" +
+      "<div class=\"collapse\" id=\"collapse" + iter + "\" style=\"margin-top: 10px\">" +
+      "<hr class=\"featurette-divider\">" +
+      "<p>" + ateliers[iter].informations + "</p>" +
+      "</div></div></div></div></div></div>";
+      $("#gridContent").append(res);
+
     }
-    var added = "<div class=\"col-md-3 col-sm-4 col-xs-12\"><a href=\"/editerecette\"><img src=\"/plus.png\" class=\"img-responsive img-circle\" style=\"width: 50%; height: 50%\"></a></div>";
-    $("#recettesTable").append(added);
+    $("#gridContent").append(added);
+  </script>
+
+  <script>
+  function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
+    function search() {
+      $("#searchButton").prop('disabled', true);
+      document.getElementById("gridContent").innerHTML = "";
+      $("#loader").toggleClass("hidden");
+      $.post('/recherchemesreservations',
+      {
+        text: escapeHtml(document.getElementById("search").value),
+        ordre: escapeHtml(document.getElementById("sel1").value),
+        dir: escapeHtml(document.getElementById("sel2").value)
+      }, function(data)
+      {
+        if (data != null) {
+          var ateliersSize = data.rowCount;
+          var ateliers = data.rows;
+          for (var iter = 0; iter < ateliersSize; iter++) {
+            var res = "<div class=\"col-md-12\">" +
+              "<div class=\"panel panel-default\" style=\"border-radius: 20px\">" +
+              "<div class=\"panel-body\">" +
+              "<div class=\"row\">" +
+              "<div class=\"col-sm-3\">" +
+              "<img src=\"";
+            if (ateliers[iter].url_img == null) {
+              res = res + "https://fakeimg.pl/500x350/";
+            } else {
+              res = res + ateliers[iter].url_img;
+            }
+            res = res + "\" class=\"img-responsive\">" +
+            "</div>" +
+            "<div class=\"col-sm-9\">" +
+            "<h1>" + ateliers[iter].nom + "</h1>" +
+            "<h3>" + ateliers[iter].date + " - de " + ateliers[iter].debut + " à " + ateliers[iter].fin + "</h3>" +
+            "<h3>" + ateliers[iter].ville + " - " + ateliers[iter].adresse + "</h3>" +
+            "<h3>Pour " + ateliers[iter].nb + " personne(s)</h3>" +
+            "</div>" +
+            "</div>" +
+            "<div class=\"row\">" +
+            "<div class=\"col-md-12\">" +
+            "<div class=\"text-center\">" +
+            "<span class=\"glyphicon glyphicon-chevron-down\" aria-hidden=\"true\" style=\"font-size: 15px; cursor: pointer;\" data-toggle=\"collapse\" data-target=\"#collapse" + iter + "\"></span></h1>" +
+            "</div>" +
+            "<div class=\"collapse\" id=\"collapse" + iter + "\" style=\"margin-top: 10px\">" +
+            "<hr class=\"featurette-divider\">" +
+            "<p>" + ateliers[iter].informations + "</p>" +
+            "</div></div></div></div></div></div>";
+            $("#gridContent").append(res);
+          }
+        }
+        $("#searchButton").prop('disabled', false);
+        $("#loader").toggleClass("hidden");
+      });
+      $("#gridContent").append(added);
+    }
   </script>
 
   <script>
@@ -191,8 +284,6 @@
     });
   });
   </script>
-
-
 
 </body>
 

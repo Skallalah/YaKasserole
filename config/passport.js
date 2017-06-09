@@ -13,7 +13,7 @@ module.exports = function(passport, pool) {
 
     passport.deserializeUser((id, done)=>{
       console.log("deserialize ", id);
-      pool.query("SELECT * FROM compte " +
+      pool.query("SELECT id, url_img, email, prenom, nom, adresse, pays, ville, code_postal, telephone, pwd, token, status, is_premium(id) as premium FROM compte " +
               "WHERE id = $1", [id])
       .then((user)=>{
         if (user.rowCount != 1)
@@ -37,7 +37,7 @@ module.exports = function(passport, pool) {
   },
   (username, password, done) => {
     console.log("Login process:", username, password);
-    return pool.query("SELECT * " +
+    return pool.query("SELECT id, url_img, email, prenom, nom, adresse, pays, ville, code_postal, telephone, pwd, token, status, is_premium(id) as premium " +
     "FROM compte " +
     "WHERE email=$1 AND pwd=$2 AND token=0", [username, password])
     .then((result)=> {
@@ -85,7 +85,7 @@ module.exports = function(passport, pool) {
      profile.name.givenName])
      .then((result)=>{
        console.log(result);
-       return pool.query("SELECT * FROM compte WHERE email=$1 AND token=1", [profile.emails[0].value])
+       return pool.query("SELECT id, url_img, email, prenom, nom, adresse, pays, ville, code_postal, telephone, pwd, token, status, is_premium(id) as premium FROM compte WHERE email=$1 AND token=1", [profile.emails[0].value])
        .then((result)=> {
          console.log(result);
          console.log(result.rowCount);
@@ -138,7 +138,7 @@ module.exports = function(passport, pool) {
       profile.name.givenName])
       .then((result)=>{
         console.log(result);
-        return pool.query("SELECT * FROM compte WHERE email=$1 AND token=2", [profile.emails[0].value])
+        return pool.query("SELECT id, url_img, email, prenom, nom, adresse, pays, ville, code_postal, telephone, pwd, token, status, is_premium(id) as premium FROM compte WHERE email=$1 AND token=2", [profile.emails[0].value])
         .then((result)=> {
           console.log(result);
           console.log(result.rowCount);

@@ -105,6 +105,80 @@
     </div>
   </div>
 
+  <div id="modalPremium" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content squared">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Paiement</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h2>Passer premium</h2>
+              <h4>Prix: 12,00€</h4>
+              <p>Passer premium est un merveilleux moyen pour découvrir, seul ou entre amis, le monde de la cuisine. Bénéficiez de réductions inédites et d'avantages supplémentaires en prenant cet abonnement d'une durée de 30 jours.</p>
+            </div>
+            <div class="col-md-6">
+              <div class="radio">
+                <label><input type="radio" name="optradio" onchange="appear(1)" checked="checked">Carte bancaire</label>
+              </div>
+              <div id="hide1">
+                <div class="form-group">
+                  <label for="emailConnexion">Numéro de carte bancaire</label>
+                  <input type="text" class="form-control squared" maxlength="16" id="carte1">
+                </div>
+                <div class="form-group">
+                  <label for="mdpConnexion">Date d'expiration</label>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <select class="form-control squared" id="selCarte">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                        <option>11</option>
+                        <option>12</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <select class="form-control squared" id="selCarte">
+                        <option>2017</option>
+                        <option>2018</option>
+                        <option>2019</option>
+                        <option>2020</option>
+                        <option>2021</option>
+                        <option>2022</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="mdpConnexion">Code de sécurité</label>
+                  <input type="password" class="form-control squared" id="code1">
+                </div>
+              </div>
+              <div class="radio">
+                <label><input type="radio" name="optradio" onchange="disappear(1)">Paypal</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="premium()" id="continuer" class="btn btn-primary squared">Continuer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="wrapper">
     <div id="sidebar-wrapper">
       <ul class="sidebar-nav">
@@ -135,9 +209,16 @@
           <a href="/moncompte">Mon profil</a>
         </li>
         <% if (typeof user != 'undefined' ) { %>
-          <% if (user.status == "Admin") { %>
+          <% if (user.status == "Admin" || user.status == "Responsable Atelier" || user.status == "Responsable Recette") { %>
             <li>
               <a href="/donnees">Données</a>
+            </li>
+          <% } %>
+        <% } %>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Membre") { %>
+            <li>
+              <a href="/mesreservations">Mes réservations</a>
             </li>
           <% } %>
         <% } %>
@@ -150,6 +231,7 @@
       <div class="container-fluid container-main" style="margin: 20px">
 
         <div class="row">
+          <div id="paiement-alert"></div>
           <div class="col-md-5">
             <div class="row">
               <div class="col-md-12">
@@ -164,7 +246,14 @@
             </div>
             <div class="row row-10">
               <div class="col-md-12">
-                <button type="button" class="btn btn-warning center-block squared"><span class="glyphicon glyphicon-star"></span><b> Passer premium<b></button>
+                <% if (typeof user != 'undefined' ) { %>
+                  <% if (user.premium == null) { %>
+                    <button type="button" class="btn btn-warning center-block squared" data-toggle="modal" data-target="#modalPremium"><span class="glyphicon glyphicon-star"></span><b> Passer premium<b></button>
+                  <% } else { %>
+                    <button type="button" class="btn btn-warning center-block squared disabled"><span class="glyphicon glyphicon-star"></span><b> Premium jusqu'au <%= user.premium %> <b></button>
+                  <% } %>
+                <% } %>
+
                 </div>
               </div>
             </div>
@@ -405,6 +494,33 @@
     });
   }
 
+  </script>
+
+  <script>
+  function premium() {
+    $("#continuer").prop('disabled', true);
+    $.post('/premium',
+    {
+    }, function(data)
+    {
+      if (data == "success") {
+        location.reload();
+      } else {
+        $("#continuer").prop('disabled', false);
+        document.getElementById("paiement-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + data + ".</div>";
+      }
+    });
+  }
+  </script>
+
+  <script>
+    function appear(id) {
+      $("#hide" + id).show();
+    }
+
+    function disappear(id) {
+      $("#hide" + id).hide();
+    }
   </script>
 
 </body>

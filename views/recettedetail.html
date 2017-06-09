@@ -65,9 +65,16 @@
           <a href="/moncompte">Mon profil</a>
         </li>
         <% if (typeof user != 'undefined' ) { %>
-          <% if (user.status == "Admin") { %>
+          <% if (user.status == "Admin" || user.status == "Responsable Atelier" || user.status == "Responsable Recette") { %>
             <li>
               <a href="/donnees">Données</a>
+            </li>
+          <% } %>
+        <% } %>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Membre") { %>
+            <li>
+              <a href="/mesreservations">Mes réservations</a>
             </li>
           <% } %>
         <% } %>

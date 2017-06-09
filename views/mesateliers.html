@@ -66,9 +66,16 @@
           <a href="/moncompte">Mon profil</a>
         </li>
         <% if (typeof user != 'undefined' ) { %>
-          <% if (user.status == "Admin") { %>
+          <% if (user.status == "Admin" || user.status == "Responsable Atelier" || user.status == "Responsable Recette") { %>
             <li>
               <a href="/donnees">Données</a>
+            </li>
+          <% } %>
+        <% } %>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Membre") { %>
+            <li>
+              <a href="/mesreservations">Mes réservations</a>
             </li>
           <% } %>
         <% } %>
@@ -101,6 +108,14 @@
                 <option>Prix</option>
                 <option>Temps</option>
                 <option>Alphabétique</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <select class="form-control squared" id="sel2">
+                <option>Ordre Ascendant</option>
+                <option>Ordre Descendant</option>
               </select>
             </div>
           </div>
@@ -189,7 +204,8 @@
       $.post('/rechercheatelier',
       {
         text: escapeHtml(document.getElementById("search").value),
-        ordre: escapeHtml(document.getElementById("sel1").value)
+        ordre: escapeHtml(document.getElementById("sel1").value),
+        dir: escapeHtml(document.getElementById("sel2").value)
       }, function(data)
       {
         if (data != null) {
