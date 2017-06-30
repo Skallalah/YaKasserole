@@ -3,8 +3,7 @@ module.exports = function(app, passport, pool, config, fs, sha1) {
   var nodemailer = require('nodemailer');
   var MailChecker = require('mailchecker');
 
-
-  
+  var pdf = require('html-pdf');
 
   let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -25,7 +24,7 @@ module.exports = function(app, passport, pool, config, fs, sha1) {
 
   function sendmail(prenom, nom, from_, to_, subject_, text_) {
     let mailOptions = {
-      from: '\"' + prenom + ' ' + nom + '\"? <' + from_ +'>', // sender address
+      from: '\"' + prenom + ' ' + nom + '\" <' + from_ +'>', // sender address
       to: to_, // list of receivers
       subject: subject_, // Subject line
       text: text_ // plain text body
@@ -675,7 +674,7 @@ module.exports = function(app, passport, pool, config, fs, sha1) {
     res.render('nouscontacter.html', { title: 'Nous Contacter', user : req.user });
   });
 
-  app.post('/contacter', isLoggedIn, function(req, res, next) {
+  app.post('/contacter', function(req, res, next) {
     console.log("Contact...");
     if (sendmail(req.body.prenom, req.body.nom, req.body.email, 'serviceyakasserole@gmail.com', req.body.objet, req.body.message) == 1) {
       res.send("success");
@@ -866,7 +865,7 @@ app.get('/statistiques', isLoggedIn, function(req, res, next) {
         console.log(result);
         if (result.rows[0].inscription == 1) {
           res.send("success");
-          sendmail(req.user.prenom, req.user.nom, req.user.email, 'serviceyakasserole@gmail.com', "Réservation atelier", message);
+          sendmail('Equipe', 'YaKasserole', 'serviceyakasserole@gmail.com', req.body.email, "Réservation atelier", message);
         } else {
           res.send("Cette atelier ne comporte pas assez de place pour votre réservation.");
         }
@@ -887,7 +886,7 @@ app.get('/statistiques', isLoggedIn, function(req, res, next) {
       .then((result)=>{
         console.log(result);
         res.send("success");
-        sendmail(req.user.prenom, req.user.nom, req.user.email, 'serviceyakasserole@gmail.com', "Abonnement Premium", message);
+        sendmail('Equipe', 'YaKasserole', 'serviceyakasserole@gmail.com', req.body.email, "Abonnement Premium", message);
 
       })
       .catch((err)=>{
@@ -945,7 +944,7 @@ app.get('/statistiques', isLoggedIn, function(req, res, next) {
         .then((result)=>{
           console.log(result);
           var message = "Cher Client,\nIl nous est parvenu que vous avez oublié votre mot de passe. Si vous n\'êtes pas à l'origine de cette demande, veuillez vous renseigner auprès d'un responsable.\nVotre nouveau mot de passe est: " + newmdp;
-          sendmail(result.rows[0].prenom, result.rows[0].nom, req.body.email, 'serviceyakasserole@gmail.com', "Changement de mot de passe", message);
+          sendmail('Equipe', 'YaKasserole', 'serviceyakasserole@gmail.com', req.body.email, "Changement de mot de passe", message);
         })
       }
     })
@@ -980,6 +979,133 @@ app.get('/statistiques', isLoggedIn, function(req, res, next) {
       console.log("The file was saved!");
     });
       res.send('success');
+    }
+  });
+
+  app.post('/pdf', isLoggedIn, function(req, res, next) {
+    if (req.user.status != "Admin") {
+    } else {
+      console.log("Statistiques");
+      pool.query("select * from recette_activites")
+      .then((recette_activites)=>{
+        console.log(recette_activites);
+        pool.query("select * from provenance_fonds")
+        .then((provenance_fonds)=>{
+          console.log(provenance_fonds);
+          pool.query("select * from repartition_gains")
+          .then((repartition_gains)=>{
+            console.log(repartition_gains);
+            pool.query("select * from meilleur_chef")
+            .then((meilleur_chef)=>{
+              console.log(meilleur_chef);
+              pool.query("select * from meilleur_membre")
+              .then((meilleur_membre)=>{
+                console.log(meilleur_membre);
+                pool.query("select * from recette_mois")
+                .then((recette_mois)=>{
+                  console.log(recette_mois);
+                  pool.query("select * from top5_commentaire")
+                  .then((top5_commentaire)=>{
+                    console.log(top5_commentaire);
+                    pool.query("select * from compo_comptes")
+                    .then((compo_comptes)=>{
+                      console.log(compo_comptes);
+                      pool.query("select * from type_comptes")
+                      .then((type_comptes)=>{
+                        pool.query("select * from top5_recettes")
+                        .then((top5_recettes)=>{
+                          console.log(top5_recettes);
+
+                          var html = "<h1>Statistiques</h1>";
+                          html += "<h2>Bénéfices</h2>";
+                          html += "<p>Recette du mois: " + recette_mois.rows[0].sum + "</p>";
+
+                          html += "<h3>Répartition des gains: </h3><ul>";
+                          for (var i = 0; i < repartition_gains.rowCount; i++) {
+                            html += "<li>" + repartition_gains.rows[i].date + " - " + repartition_gains.rows[i].sum + "</li>"
+                          }
+                          html += "</ul>";
+
+                          html += "<h3>Provenance des fonds: </h3><ul>";
+                          for (var i = 0; i < provenance_fonds.rowCount; i++) {
+                            html += "<li>" + provenance_fonds.rows[i].provenance + " - " + provenance_fonds.rows[i].sum + "</li>"
+                          }
+                          html += "</ul>";
+
+                          html += "<h2>Activitées</h2>";
+                          html += "<p>Chef le plus rentable: " + meilleur_chef.rows[0].meilleur_chef + "</p>";
+                          html += "<p>Membre le plus actif: " + meilleur_membre.rows[0].meilleur_membre + "</p>";
+
+                          html += "<h3>Activitées sur la création de Recettes</h3><ul>";
+                          for (var i = 0; i < recette_activites.rowCount; i++) {
+                            html += "<li>" + recette_activites.rows[i].date + " - " + recette_activites.rows[i].count + "</li>"
+                          }
+                          html += "</ul>";
+
+                          html += "<h3>Recettes les plus commentées</h3><ul>";
+                          for (var i = 0; i < top5_commentaire.rowCount; i++) {
+                            html += "<li>" + top5_commentaire.rows[i].nom + " - " + top5_commentaire.rows[i].nb + "</li>"
+                          }
+                          html += "</ul>";
+
+                          html += "<h3>Recettes les plus aimées</h3><ul>";
+                          for (var i = 0; i < top5_recettes.rowCount; i++) {
+                            html += "<li>" + top5_recettes.rows[i].nom + " - " + top5_recettes.rows[i].count + "</li>"
+                          }
+                          html += "</ul>";
+
+                          html += "<h2>Comptes</h2>";
+
+                          html += "<h3>Répartition des types de comptes</h3><ul>";
+                          for (var i = 0; i < type_comptes.rowCount; i++) {
+                            html += "<li>" + type_comptes.rows[i].type + " - " + type_comptes.rows[i].count + "</li>"
+                          }
+                          html += "</ul>";
+
+                          html += "<h3>Répartition des droits de comptes</h3><ul>";
+                          for (var i = 0; i < compo_comptes.rowCount; i++) {
+                            html += "<li>" + compo_comptes.rows[i].status + " - " + compo_comptes.rows[i].count + "</li>"
+                          }
+                          html += "</ul>";
+
+                          pdf.create(html).toFile('./test.pdf', function(err, result) {
+                            if (err) return console.log(err);
+                            console.log(result); // { filename: '/app/businesscard.pdf' }
+                            res.send("success");
+
+
+                          });
+
+                        });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+
+      })
+      .catch((err)=>{
+        console.log(err);
+        //done(new Error(`User with the id ${id} does not exist`));
+      })
+      //res.render('moncompte.html', { title: 'Mon Compte', user: req.user });
+    });
+    }
+
+  });
+
+  app.get('/downloadpdf', isLoggedIn, function(req, res, next) {
+    if (req.user.status == "Admin") {
+      res.download('./test.pdf', function (err) {
+        if (err) {
+          console.log("Error");
+          console.log(err);
+        } else {
+          console.log("Success");
+        }
+      });
     }
   });
 

@@ -153,6 +153,7 @@
 
 
 
+
           </div>
 
         </div>
@@ -172,6 +173,7 @@
               </div>
             </div>
           </div>
+          <button type="button" class="btn btn-primary pull-right" style="squared" onclick="generer()">Générer PDF</button>
         </div>
 
 
@@ -335,6 +337,17 @@
     $("#top5_recettes").append('<li>' + top_rec[i].nom + '</li>');
   }
 
+  </script>
+
+  <script>
+  function generer() {
+    $.post('/pdf',
+    {
+    }, function(data)
+    {
+      $(location).attr("href", "/downloadpdf");
+    });
+  }
   </script>
 
   <script>
