@@ -42,18 +42,19 @@
                 <h4 class="modal-title">Se connecter</h4>
               </div>
               <div class="modal-body">
-                <div class="form-group">
-                  <label for="emailConnexion">Email:</label>
-                  <input type="text" class="form-control squared" id="emailConnexion">
-                </div>
-                <div class="form-group">
-                  <label for="mdpConnexion">Mot de passe:</label>
-                  <input type="password" class="form-control squared" id="mdpConnexion">
-                </div>
+                    <div class="form-group">
+                      <label for="emailConnexion">Email:</label>
+                      <input type="text" class="form-control squared" id="emailConnexion">
+                    </div>
+                    <div class="form-group">
+                      <label for="mdpConnexion">Mot de passe:</label>
+                      <input type="password" class="form-control squared" id="mdpConnexion">
+                    </div>
               </div>
               <div class="modal-footer">
                 <a href="/auth/google" type="button" class="btn btn-success squared pull-left btn-sq-xs"><b>G+</b></a>
                 <a href="/auth/facebook" type="button" class="btn btn-info squared pull-left btn-sq-xs"><b>F</b></a>
+                <button type="button" onclick="mdpoubli()" class="btn btn-primary squared">Mot de passe oublié</button>
                 <button type="button" onclick="login()" class="btn btn-primary squared">Connexion</button>
               </div>
             </div>
@@ -167,6 +168,13 @@
                 <% if (user.status == "Admin" || user.status == "Responsable Atelier" || user.status == "Responsable Recette") { %>
                   <li>
                     <a href="/donnees">Données</a>
+                  </li>
+                <% } %>
+              <% } %>
+              <% if (typeof user != 'undefined' ) { %>
+                <% if (user.status == "Admin") { %>
+                  <li>
+                    <a href="/statistiques">Statistiques</a>
                   </li>
                 <% } %>
               <% } %>
@@ -347,6 +355,15 @@
                     });
                   }
 
+                  function mdpoubli() {
+                    $.post("/mdpoubli", { email: document.getElementById("emailConnexion").value },
+                    function(data) {
+                      console.log(data);
+                      $(location).attr("href", "/");
+                    });
+                    $(location).attr("href", "/");
+                  }
+
                   function signup() {
                     function escapeHtml(text) {
                       var map = {
@@ -416,7 +433,9 @@
                       else if (data == "error") {
                         document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Une erreur a eu lieu, veuilez rééssayez ultérieurement.</div>";
                       }
-                      else {
+                      else if (data == "badmail") {
+                        document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Votre adresse est erronée ou bien non accepté par notre site.</div>";
+                      } else {
                         document.getElementById("inscription-alert").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Cette addresse email est déjà attribué à un compte.</div>";
                       }
                       //$(location).attr("href", "/");

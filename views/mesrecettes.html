@@ -71,6 +71,13 @@
           <% } %>
         <% } %>
         <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Admin") { %>
+            <li>
+              <a href="/statistiques">Statistiques</a>
+            </li>
+          <% } %>
+        <% } %>
+        <% if (typeof user != 'undefined' ) { %>
           <% if (user.status == "Membre") { %>
             <li>
               <a href="/mesreservations">Mes réservations</a>
@@ -92,9 +99,9 @@
           <div class="col-md-6">
 
             <div class="input-group">
-              <input type="text" class="form-control squared" placeholder="Rechercher...">
+              <input type="text" class="form-control squared" placeholder="Rechercher..." id="search">
               <div class="input-group-btn">
-                <button class="btn btn-default squared" type="submit">
+                <button class="btn btn-default squared" type="submit" id="searchButton" onclick="search()">
                   <i class="glyphicon glyphicon-search"></i>
                 </button>
               </div>
@@ -119,6 +126,8 @@
             </div>
           </div>
         </div>
+        <div id="loader" class="loader center-div hidden"></div>
+
         <div class="row row-10" id="recettesTable">
 
       </div>
@@ -154,6 +163,58 @@
     }
     var added = "<div class=\"col-md-3 col-sm-4 col-xs-12\"><a href=\"/editerecette\"><img src=\"/plus.png\" class=\"img-responsive img-circle\" style=\"width: 50%; height: 50%\"></a></div>";
     $("#recettesTable").append(added);
+  </script>
+
+  <script>
+  function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+  
+  function search() {
+    $("#searchButton").prop('disabled', true);
+    document.getElementById("recettesTable").innerHTML = "";
+    $("#loader").toggleClass("hidden");
+    $.post('/recherchemesrecettes',
+    {
+      text: escapeHtml(document.getElementById("search").value),
+      ordre: escapeHtml(document.getElementById("sel1").value),
+      dir: escapeHtml(document.getElementById("sel2").value)
+    }, function(data)
+    {
+      if (data != null) {
+        var recettesSize = data.rowCount;
+        var recettes = data.rows;
+        for (var iter = 0; iter < recettesSize; iter++) {
+
+          var res = "<div id=\"first\" class=\"col-md-3 col-sm-4 col-xs-12\">" +
+            "<div class=\"recette-container\">" +
+            "<a href=\"recettes/" + recettes[iter].id + "\"><img class=\"img-responsive image\" src=\"";
+          if (recettes[iter].url_img == null) {
+            res = res + "https://fakeimg.pl/1920x1080/";
+          } else {
+            res = res + recettes[iter].url_img;
+          }
+          res = res + "\"/></a>" +
+              "<div class=\"middle\">" +
+                "<div class=\"text\">" + recettes[iter].nom + "</div>" +
+                "<div class=\"text-time\">" + recettes[iter].tmp_prep + "</div>" +
+                "<p style=\"color: white; font-size: 1.5em; font-weight: bold; text-align: left;\"><span class=\"glyphicon glyphicon-heart\" aria-hidden=\"true\"></span> " +
+                recettes[iter].nb_aime + "</p></div></div></div>";
+          $("#recettesTable").append(res);
+        }
+      $("#searchButton").prop('disabled', false);
+      $("#loader").toggleClass("hidden");
+    }
+    });
+  }
   </script>
 
   <script>

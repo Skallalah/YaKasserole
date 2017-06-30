@@ -1,8 +1,10 @@
-module.exports = function(app, passport, pool) {
+module.exports = function(app, passport, pool, config, fs, sha1) {
   /* GET home page. */
   var nodemailer = require('nodemailer');
+  var MailChecker = require('mailchecker');
 
-  var sha1 = require('sha1');
+
+  
 
   let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -295,7 +297,39 @@ module.exports = function(app, passport, pool) {
     })
   });
 
-
+  app.post('/recherchemesrecettes', isLoggedIn, function(req, res, next) {
+    console.log("Recherche mes recettes...");
+    var comp = "";
+    var word = "%" + req.body.text + "%";
+    var ord = "";
+    if (req.body.ordre == "Approbation") {
+      comp = "nb_aime";
+    } else if (req.body.ordre == "Temps") {
+      comp = "tmp_prep";
+    } else {
+      comp = "nom";
+    }
+    if (req.body.dir == "Ordre Ascendant") {
+      ord = "ASC";
+    } else {
+      ord = "DESC";
+    }
+    console.log(comp);
+    pool.query("SELECT id, nom, url_img, tmp_prep, count(*) AS nb_aime FROM recette " +
+    "LEFT JOIN aimer ON aimer.id_recette = recette.id " +
+    "WHERE lower(nom) LIKE $1 AND valide = TRUE AND recette.id_compte = $2" +
+    "GROUP BY id, nom, url_img, tmp_prep " +
+    "ORDER BY " + comp + " " + ord, [word, req.user.id])
+    .then((result)=>{
+      console.log(result);
+      res.send(result);
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("error");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
 
   app.get('/mesrecettes', isLoggedIn, function(req, res, next) {
     console.log("mdr");
@@ -374,29 +408,34 @@ module.exports = function(app, passport, pool) {
   app.post('/signup', function(req, res, next) {
     console.log("signup...");
     var pass = sha1(req.body.pass)
-    pool.query("SELECT add_membre($1, $2, NULL, $3, $4, $5, $6, \'000000\', $7, $8, \'Membre\', 0)",
-      [req.body.email,
-      pass,
-      req.body.nom,
-      req.body.prenom,
-      req.body.adresse,
-      req.body.code,
-      req.body.pays,
-      req.body.ville])
-    .then((result)=>{
-      console.log(result);
-      if (result.rows[0].add_membre == 1) {
-        res.send("success");
-      }
-      else {
-        res.send("fail");
-      }
-    })
-    .catch((err)=>{
-      console.log(err);
-      res.send("error");
-      //done(new Error(`User with the id ${id} does not exist`));
-    })
+    if (MailChecker.isValid(req.body.email)) {
+      pool.query("SELECT add_membre($1, $2, NULL, $3, $4, $5, $6, \'000000\', $7, $8, \'Membre\', 0)",
+        [req.body.email,
+        pass,
+        req.body.nom,
+        req.body.prenom,
+        req.body.adresse,
+        req.body.code,
+        req.body.pays,
+        req.body.ville])
+      .then((result)=>{
+        console.log(result);
+        if (result.rows[0].add_membre == 1) {
+          res.send("success");
+        }
+        else {
+          res.send("fail");
+        }
+      })
+      .catch((err)=>{
+        console.log(err);
+        res.send("error");
+        //done(new Error(`User with the id ${id} does not exist`));
+      })
+    }
+    else {
+      res.send('badmail');
+    }
   });
 
   app.post('/modification', isLoggedIn, function(req, res, next) {
@@ -848,7 +887,7 @@ app.get('/statistiques', isLoggedIn, function(req, res, next) {
       .then((result)=>{
         console.log(result);
         res.send("success");
-        sendmail(req.user.prenom, req.user.nom, req.user.email, 'serviceyakasserole@gmail.com', "Réservation atelier", message);
+        sendmail(req.user.prenom, req.user.nom, req.user.email, 'serviceyakasserole@gmail.com', "Abonnement Premium", message);
 
       })
       .catch((err)=>{
@@ -891,6 +930,56 @@ app.get('/statistiques', isLoggedIn, function(req, res, next) {
         res.send("Erreur: veuillez réessayer ultèrieurement");
         //done(new Error(`User with the id ${id} does not exist`));
       })
+    }
+  });
+
+  app.post('/mdpoubli', function(req, res, next) {
+    console.log("Oubli de mot de passe...");
+    var newmdp = Math.random().toString(36).substring(7);
+    var hash = sha1(newmdp);
+    pool.query("UPDATE compte SET pwd = $2 WHERE email = $1 AND token = 0", [req.body.email, hash])
+    .then((resp)=>{
+      console.log(resp);
+      if (resp.rowCount == 1) {
+        pool.query("SELECT * FROM compte WHERE email = $1 AND token = 0", [req.body.email])
+        .then((result)=>{
+          console.log(result);
+          var message = "Cher Client,\nIl nous est parvenu que vous avez oublié votre mot de passe. Si vous n\'êtes pas à l'origine de cette demande, veuillez vous renseigner auprès d'un responsable.\nVotre nouveau mot de passe est: " + newmdp;
+          sendmail(result.rows[0].prenom, result.rows[0].nom, req.body.email, 'serviceyakasserole@gmail.com', "Changement de mot de passe", message);
+        })
+      }
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.send("Erreur: veuillez réessayer ultèrieurement");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+  });
+
+  app.get('/install', function(req, res, next) {
+    if (config.installed == 0) {
+      res.render('install.html', { title: 'Installation' });
+    }
+  });
+
+  app.post('/install', function(req, res, next) {
+    if (config.installed == 0) {
+      config.user = req.body.user;
+      config.password = req.body.password;
+      config.host = req.body.host;
+      config.database = req.body.database;
+      config.installed = 1;
+      config.adminName = req.body.adressAdmin;
+      config.adminPass = req.body.mdpAdmin;
+      console.log(config);
+      fs.writeFile("./ressources/values.json", JSON.stringify(config), function(err) {
+      if(err) {
+          return console.log(err);
+      }
+
+      console.log("The file was saved!");
+    });
+      res.send('success');
     }
   });
 

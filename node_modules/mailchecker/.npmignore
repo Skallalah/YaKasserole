@@ -1,0 +1,12 @@
+.DS_Store
+node_modules
+npm-*.log
+compare.js
+*.pyc
+*.gem
+Gemfile.lock
+vendor/
+.env
+
+rust.iml
+platform/rust/target/

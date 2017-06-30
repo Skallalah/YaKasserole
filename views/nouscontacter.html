@@ -171,6 +171,13 @@
                 <% } %>
               <% } %>
               <% if (typeof user != 'undefined' ) { %>
+                <% if (user.status == "Admin") { %>
+                  <li>
+                    <a href="/statistiques">Statistiques</a>
+                  </li>
+                <% } %>
+              <% } %>
+              <% if (typeof user != 'undefined' ) { %>
                 <% if (user.status == "Membre") { %>
                   <li>
                     <a href="/mesreservations">Mes réservations</a>

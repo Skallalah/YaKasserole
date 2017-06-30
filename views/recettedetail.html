@@ -72,6 +72,13 @@
           <% } %>
         <% } %>
         <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Admin") { %>
+            <li>
+              <a href="/statistiques">Statistiques</a>
+            </li>
+          <% } %>
+        <% } %>
+        <% if (typeof user != 'undefined' ) { %>
           <% if (user.status == "Membre") { %>
             <li>
               <a href="/mesreservations">Mes réservations</a>
@@ -104,14 +111,19 @@
           </div>
         </div>
         <hr class="featurette-divider">
-        <div id="etapes">
-          <div class="panel panel-default">
-            <div class="panel-heading">Ingrédients</div>
-            <div class="panel-body"><%- recette_etapes.rows[0].contenu.replace(/(?:\r\n|\r|\n)/g, '<br />'); %></div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="panel panel-default">
+              <div class="panel-heading">Ingrédients</div>
+              <div class="panel-body"><%- recette_etapes.rows[0].contenu.replace(/(?:\r\n|\r|\n)/g, '<br />'); %></div>
+            </div>
           </div>
-          <hr class="featurette-divider">
+          <div class="col-md-8">
+            <div id="etapes">
+            </div>
+          </div>
+        </div>
 
-      </div>
       <hr class="featurette-divider">
 
       <div class="row row-10" id="comment">

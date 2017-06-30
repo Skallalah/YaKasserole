@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YaKasserole - Installation</title>
+<script type="text/javascript" src="/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/bootstrapJS/collapse.js"></script>
+<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="row row-10">
+      <div class="col-md-12">
+
+
+        <div class="jumbotron">
+          <h1>Installation du site YaKasserole</h1>
+          <p>Modifiez les variables de la base de données, et créez un compte Admin !</p>
+        </div>
+      </div>
+      <h2>Création de la base de données</h2>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Utilisateur</label>
+        <input type="email" class="form-control" id="utilisateur" placeholder="Utilisateur...">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Mot de passe</label>
+        <input type="email" class="form-control" id="mdp" placeholder="Mot de passe...">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Hôte</label>
+        <input type="email" class="form-control" id="hote" placeholder="Hôte...">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Nom de la base de données</label>
+        <input type="email" class="form-control" id="nom" placeholder="Nom...">
+      </div>
+
+      <h2>Compte Admin</h2>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Adresse Email</label>
+        <input type="email" class="form-control" id="adressAdmin" placeholder="Nom d'utilisateur...">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Mot de passe</label>
+        <input type="email" class="form-control" id="mdpAdmin" placeholder="Mot de passe...">
+      </div>
+      <button type="button" class="btn btn-primary pull-right" onclick="finaliser()">Finaliser</button>
+
+
+    </div>
+  </div>
+</body>
+
+<script>
+function escapeHtml(text) {
+  var map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+function finaliser() {
+  $.post('/install',
+  {
+    user: escapeHtml(document.getElementById("utilisateur").value),
+    password: escapeHtml(document.getElementById("mdp").value),
+    host: escapeHtml(document.getElementById("hote").value),
+    database: escapeHtml(document.getElementById("nom").value),
+    password: escapeHtml(document.getElementById("mdp").value),
+    adressAdmin: escapeHtml(document.getElementById("adressAdmin").value),
+    mdpAdmin: escapeHtml(document.getElementById("mdpAdmin").value),
+  }, function(data)
+  {
+  });
+}
+</script>
+
+</html>
