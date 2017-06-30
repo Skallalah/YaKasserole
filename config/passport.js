@@ -4,6 +4,8 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var configAuth = require('./auth');
 
+var sha1 = require('sha1');
+
 module.exports = function(passport, pool) {
 
   passport.serializeUser((user, done)=>{
@@ -39,7 +41,7 @@ module.exports = function(passport, pool) {
     console.log("Login process:", username, password);
     return pool.query("SELECT id, url_img, email, prenom, nom, adresse, pays, ville, code_postal, telephone, pwd, token, status, is_premium(id) as premium " +
     "FROM compte " +
-    "WHERE email=$1 AND pwd=$2 AND token=0", [username, password])
+    "WHERE email=$1 AND pwd=$2 AND token=0", [username, sha1(password)])
     .then((result)=> {
       console.log(result);
       console.log(result.rowCount);

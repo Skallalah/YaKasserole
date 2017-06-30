@@ -1,0 +1,368 @@
+<% include layout.html %>
+<link rel="stylesheet" type="text/css" href="/css/recette.css">
+<link rel="stylesheet" type="text/css" href="/css/roundbutton.css">
+<script type="text/javascript" src="/chart.js/Chart.min.js"></script>
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-inverse navbar-static-top navbar-fixed-top">
+    <a href="#" class="pull-left" id="<% if (typeof user != 'undefined') {%>menu-toggle<% } %>">
+    <img src="/logo.png" width="60" height="50"></a>
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">Yakasserole</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a href="/recettes">Recettes</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="/ateliers">Ateliers</a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <% if (typeof user == 'undefined') {%>
+            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Nous rejoindre</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#modalConnexion"><span class="glyphicon glyphicon-log-in"></span> Se connecter</a></li>
+          <% } else { %>
+            <li><a href="/moncompte"><span class="glyphicon glyphicon-user"></span> Bienvenue, <%= user.prenom %></a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div id="modals">
+
+
+
+  </div>
+
+
+
+  <div id="wrapper">
+    <div id="sidebar-wrapper">
+      <ul class="sidebar-nav">
+        <img src="<% if (typeof user != 'undefined') { %>
+                    <% if (user.url_img == null) {%>
+                      /person-placeholder.jpg
+                    <% } else { %>
+                      <%= user.url_img %>
+                    <% } %>
+                  <% } %>" class="img-responsive img-circle center-block" width="130" height="130">
+        <h2 class="text-center" id="nom-nav">
+          <% if (typeof user != 'undefined') { %>
+            <%= user.prenom %>  <%= user.nom %>
+          <% } %>
+        </h2>
+        <hr class="featurette-divider">
+        <li>
+          <a href="/mesrecettes">Mes recettes</a>
+        </li>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Chef" || user.status == "Admin") { %>
+            <li>
+              <a href="/mesateliers">Mes ateliers</a>
+            </li>
+          <% } %>
+        <% } %>
+        <li>
+          <a href="/moncompte">Mon profil</a>
+        </li>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Admin" || user.status == "Responsable Atelier" || user.status == "Responsable Recette") { %>
+            <li>
+              <a href="/donnees">Données</a>
+            </li>
+          <% } %>
+        <% } %>
+        <% if (typeof user != 'undefined' ) { %>
+          <% if (user.status == "Membre") { %>
+            <li>
+              <a href="/mesreservations">Mes réservations</a>
+            </li>
+          <% } %>
+        <% } %>
+        <li>
+          <a href="/logout">Se déconnecter</a>
+        </li>
+      </ul>
+    </div>
+    <div id="page-content-wrapper">
+      <div class="container-fluid container-main" style="margin: 20px">
+        <div class="row">
+          <h1>Statistiques</h1>
+        </div>
+        <div class = "row">
+          <div class="col-md-6">
+            <div class="panel panel-default" >
+              <div class="panel-body">
+                <h2>Bénéfices</h2>
+                <div id="recette_mois">
+                  <% if (recette_mois.rowCount == 1) { %>
+                    <h3>Recette du mois: <%= recette_mois.rows[0].sum %></h3>
+                  <% } %>
+                </div>
+                <canvas id="chart_repartition"></canvas>
+                <h3>Provenance des fonds:</h3>
+                <canvas id="chart_provenance"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <h2>Activitées</h2>
+                <div id="meilleur_chef">
+                  <% if (meilleur_chef.rowCount == 1) { %>
+                    <h3>Chef plus rentable: <%= meilleur_chef.rows[0].meilleur_chef %></h3>
+                  <% } %>
+                </div>
+                <div id="meilleur_membre">
+                  <% if (meilleur_membre.rowCount == 1) { %>
+                    <h3>Membre le plus actif: <%= meilleur_membre.rows[0].meilleur_membre %></h3>
+                  <% } %>
+                </div>
+                <canvas id="chart"></canvas>
+                <div class="col-md-6">
+                  <h3>Recettes les plus commentées:</h3>
+                  <ol id="top5_commentaire">
+                  </ol>
+                </div>
+                <div class="col-md-6">
+                  <h3>Recettes les plus aimées:</h3>
+                  <ol id="top5_recettes">
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+
+
+
+          </div>
+
+        </div>
+        <div class = "row">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <h2>Comptes</h2>
+                <div class="col-md-6">
+                  <h3>Répartition des types de comptes:</h3>
+                  <canvas id="chart_type"></canvas>
+                </div>
+                <div class="col-md-6">
+                  <h3>Répartition des droits de comptes:</h3>
+                  <canvas id="chart_compo"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+      <hr class="featurette-divider">
+      <footer class="container-fluid text-center">
+        <p class="float-right"> © Copyright YaKasserole 2017. <a href="/nouscontacter">Nous contacter</a></p>
+      </footer>
+    </div>
+
+
+
+  </div>
+
+  <script>
+    var activites_data = [];
+    var activites_label = [];
+    var nb_activite = <%= recette_activites.rowCount %>;
+    var recette_activites = <%- JSON.stringify(recette_activites.rows) %>;
+    for (var i = 0; i < nb_activite; i++) {
+      activites_label.push(recette_activites[i].date);
+      activites_data.push(recette_activites[i].count);
+    }
+    var data_activite = {
+      labels: activites_label,
+      datasets: [{
+        label: "Nombre de recettes crées",
+        fillColor : "rgba(220,220,220,0.5)",
+			  strokeColor : "rgba(220,220,220,1)",
+			  pointColor : "rgba(220,220,220,1)",
+			  pointStrokeColor : "#fff",
+        data: activites_data
+      }]
+    };
+
+    Chart.Line('chart', {
+      data: data_activite
+    });
+
+    /* Provenance des fonds */
+
+    var provenance_data = [];
+    var provenance_label = [];
+    var nb_provenance = <%= provenance_fonds.rowCount %>;
+    var provenance_fonds = <%- JSON.stringify(provenance_fonds.rows) %>;
+    for (var i = 0; i < nb_provenance; i++) {
+      provenance_label.push(provenance_fonds[i].provenance);
+      provenance_data.push(provenance_fonds[i].sum);
+    }
+
+    var ctx = document.getElementById("chart_provenance").getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: provenance_label,
+        datasets: [{
+          backgroundColor: [
+            "#2ecc71",
+            "#3498db"
+          ],
+          data: provenance_data
+    }]
+  }
+});
+
+  /* Répartition des gains */
+  var repartition_data = [];
+  var repartition_label = [];
+  var nb_repartition = <%= repartition_gains.rowCount %>;
+  var repartition_gains = <%- JSON.stringify(repartition_gains.rows) %>;
+  for (var i = 0; i < nb_repartition; i++) {
+    repartition_label.push(repartition_gains[i].date);
+    repartition_data.push(repartition_gains[i].sum);
+  }
+
+  var data_repartition = {
+    labels: repartition_label,
+    datasets: [{
+      label: "Répartition des gains sur les 30 derniers jours",
+      fillColor : "rgba(220,220,220,0.5)",
+      strokeColor : "rgba(220,220,220,1)",
+      pointColor : "rgba(220,220,220,1)",
+      pointStrokeColor : "#fff",
+      data: repartition_data
+    }]
+  };
+
+  Chart.Line('chart_repartition', {
+    data: data_repartition
+  });
+
+  /* Composition des comptes */
+
+  var composition_data = [];
+  var composition_label = [];
+  var nb_composition = <%= compo_comptes.rowCount %>;
+  var compo_comptes = <%- JSON.stringify(compo_comptes.rows) %>;
+  for (var i = 0; i < nb_composition; i++) {
+    composition_label.push(compo_comptes[i].status);
+    composition_data.push(compo_comptes[i].count);
+  }
+
+  var ctx2 = document.getElementById("chart_compo").getContext('2d');
+  var myChart = new Chart(ctx2, {
+    type: 'pie',
+    data: {
+      labels: composition_label,
+      datasets: [{
+        backgroundColor: [
+          "#2ecc71",
+          "#3498db",
+          "#E9DC22",
+          "#E11F1F",
+          "#AB00C6"
+
+        ],
+        data: composition_data
+  }]
+}
+});
+
+  /* Type de comptes */
+
+  var type_data = [];
+  var type_label = [];
+  var nb_type = <%= type_comptes.rowCount %>;
+  var type_comptes = <%- JSON.stringify(type_comptes.rows) %>;
+  for (var i = 0; i < nb_type; i++) {
+    type_label.push(type_comptes[i].type);
+    type_data.push(type_comptes[i].count);
+  }
+
+  var ctx3 = document.getElementById("chart_type").getContext('2d');
+  var myChart = new Chart(ctx3, {
+    type: 'pie',
+    data: {
+      labels: type_label,
+      datasets: [{
+        backgroundColor: [
+          "#2ecc71",
+          "#3498db",
+          "#E9DC22"
+        ],
+        data: type_data
+  }]
+}
+});
+
+  /* Top 5 des commentaires */
+
+  var nb_top_com = <%= top5_commentaire.rowCount %>;
+  var top_com = <%- JSON.stringify(top5_commentaire.rows) %>;
+  for (var i = 0; i < nb_top_com; i++) {
+    $("#top5_commentaire").append('<li>' + top_com[i].nom + '</li>');
+  }
+
+  /* Top 5 des recettes les plus aimées */
+  var nb_top_rec = <%= top5_recettes.rowCount %>;
+  var top_rec = <%- JSON.stringify(top5_recettes.rows) %>;
+  for (var i = 0; i < nb_top_rec; i++) {
+    $("#top5_recettes").append('<li>' + top_rec[i].nom + '</li>');
+  }
+
+  </script>
+
+  <script>
+  function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+  }
+
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+  }
+  </script>
+
+  <script>
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+  </script>
+
+  <script>
+  $(window).scroll(function() {
+    $(".slideanim").each(function(){
+      var pos = $(this).offset().top;
+      var winTop = $(window).scrollTop();
+      if (pos < winTop + 300) {
+        $(this).addClass("slideAni");
+      }
+    });
+  });
+  </script>
+
+</body>
+
+
+
+</html>

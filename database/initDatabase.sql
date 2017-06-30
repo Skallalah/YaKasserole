@@ -30,14 +30,14 @@ ALTER TABLE transaction
     DROP CONSTRAINT transaction_compte;
 
 -- tables
-DROP TABLE aimer;
-DROP TABLE atelier;
-DROP TABLE commentaire;
-DROP TABLE compte;
-DROP TABLE etape_recette;
-DROP TABLE inscrit;
-DROP TABLE recette;
-DROP TABLE transaction;
+DROP TABLE aimer CASCADE;
+DROP TABLE atelier CASCADE;
+DROP TABLE commentaire CASCADE;
+DROP TABLE compte CASCADE;
+DROP TABLE etape_recette CASCADE;
+DROP TABLE inscrit CASCADE;
+DROP TABLE recette CASCADE;
+DROP TABLE transaction CASCADE;
 
 
 -- tables
@@ -88,7 +88,7 @@ CREATE TABLE compte (
     ville varchar(255)  NULL,
     code_postal int  NULL,
     telephone varchar(15)  NULL,
-    pwd varchar(30)  NULL,
+    pwd varchar(255)  NULL,
     token int  NOT NULL,
     status varchar(30)  NOT NULL,
     premium timestamp  NULL,
@@ -604,6 +604,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION NB_RECETTE_CREE(retour_ interval)
+       RETURNS INT AS
+$$
+BEGIN
+        PERFORM * from recette where recette.id = id_recette_;
+        IF found = FALSE THEN
+          RETURN 0;
+        END IF;
+        INSERT INTO etape_in_recette(id_recette, id_etape)
+        VALUES (id_recette_, id_etape_);
+        RETURN 1;
+        EXCEPTION
+        WHEN OTHERS THEN RETURN 2;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE VIEW compte_crees AS
   select count(*) as total_compte from compte;
 
@@ -622,3 +638,46 @@ CREATE OR REPLACE VIEW meilleur_membre AS
   join compte on id_compte = compte.id
   group by recette.id, compte.nom, compte.prenom, compte.nom order by total desc
   limit 1) as sub;
+
+CREATE OR REPLACE VIEW recette_mois AS
+  select sum(somme) from transaction WHERE EXTRACT(month from date)= EXTRACT(month from now());
+
+CREATE OR REPLACE VIEW top5_commentaire AS
+  SELECT recette.nom, count(*) AS nb FROM commentaire
+  JOIN recette ON commentaire.id_recette = recette.id
+  GROUP BY recette.nom
+  ORDER BY nb DESC LIMIT 5;
+
+CREATE OR REPLACE VIEW top5_recettes AS
+  select recette.id, nom, count(*) from recette
+  join aimer on aimer.id_recette = recette.id
+  group by recette.id
+  order by count desc
+  limit 5;
+
+
+/* Graph views */
+CREATE OR REPLACE VIEW recette_activites AS
+  SELECT * FROM (SELECT count(*), to_char(date_creation, 'YYYY-MM-DD') AS date FROM recette
+  GROUP BY date_creation
+  ORDER BY date_creation DESC LIMIT 30) AS first ORDER BY date ASC;
+
+CREATE OR REPLACE VIEW compo_comptes AS
+  SELECT status, count(*) FROM compte
+  GROUP BY status;
+
+CREATE OR REPLACE VIEW type_comptes AS
+  SELECT CASE WHEN token = 0 THEN 'Local'
+  WHEN token = 1 THEN 'Facebook'
+  WHEN token = 2 THEN 'Google'
+  END AS type, count(*) FROM compte
+  GROUP BY token;
+
+CREATE OR REPLACE VIEW repartition_gains AS
+  select date::DATE, sum(somme)::NUMERIC from transaction WHERE EXTRACT(month from date)= EXTRACT(month from now())
+  GROUP BY date::DATE;
+
+CREATE OR REPLACE VIEW provenance_fonds AS
+  select CASE WHEN id_atelier IS NULL THEN 'Abonnement Premium' ELSE 'Atelier' END AS provenance,
+  sum(somme)::NUMERIC from transaction WHERE EXTRACT(month from date)= EXTRACT(month from now())
+  GROUP BY id_atelier;

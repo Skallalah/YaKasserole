@@ -8,6 +8,7 @@
   "dependencies": {
     "body-parser": "~1.17.1",
     "bootstrap": "*",
+    "chart.js": "^2.6.0",
     "connect-flash": "*",
     "cookie-parser": "~1.4.3",
     "datatables.net": "*",
@@ -28,6 +29,7 @@
     "passport-local": "*",
     "pg": "*",
     "serve-favicon": "~2.4.2",
+    "sha1": "^1.1.1",
     "shufflejs": "^4.2.0",
     "socket.io": "*"
   },

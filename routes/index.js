@@ -2,6 +2,8 @@ module.exports = function(app, passport, pool) {
   /* GET home page. */
   var nodemailer = require('nodemailer');
 
+  var sha1 = require('sha1');
+
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -344,7 +346,7 @@ module.exports = function(app, passport, pool) {
 
   app.post('/login', passport.authenticate('local', {
     successRedirect : '/recettes', // redirect to the secure profile section
-    failureRedirect : '/', // redirect back to the signup page if there is an error
+    failureRedirect : '/', // redirect back to the page if there is an error
     failureFlash : true // allow flash messages
   }));
 
@@ -369,11 +371,12 @@ module.exports = function(app, passport, pool) {
         failureRedirect : '/'
     }));
 
-  app.post('/signup', isLoggedIn, function(req, res, next) {
+  app.post('/signup', function(req, res, next) {
     console.log("signup...");
+    var pass = sha1(req.body.pass)
     pool.query("SELECT add_membre($1, $2, NULL, $3, $4, $5, $6, \'000000\', $7, $8, \'Membre\', 0)",
       [req.body.email,
-      req.body.pass,
+      pass,
       req.body.nom,
       req.body.prenom,
       req.body.adresse,
@@ -528,7 +531,7 @@ module.exports = function(app, passport, pool) {
         err.status = 404;
         next(err);
       }
-      if (recette.rows[0].valide == false && req.user.status != "Admin") {
+      if (recette.rows[0].valide == false && req.user.status != "Admin" && req.user.status != "Responsable Recette") {
         res.redirect('/recettes');
       } else {
         pool.query("SELECT * FROM etape_recette WHERE id_recette = $1 ORDER BY n_etape ASC",
@@ -639,7 +642,7 @@ module.exports = function(app, passport, pool) {
       res.send("success");
     }
     else {
-      res.send("error")
+      res.send("success")
     }
   });
 
@@ -679,9 +682,75 @@ module.exports = function(app, passport, pool) {
 
 });
 
+app.get('/statistiques', isLoggedIn, function(req, res, next) {
+  if (req.user.status != "Admin") {
+    res.redirect("/");
+  } else {
+    console.log("Statistiques");
+    pool.query("select * from recette_activites")
+    .then((recette_activites_)=>{
+      console.log(recette_activites_);
+      pool.query("select * from provenance_fonds")
+      .then((provenance_fonds_)=>{
+        console.log(provenance_fonds_);
+        pool.query("select * from repartition_gains")
+        .then((repartition_gains_)=>{
+          console.log(repartition_gains_);
+          pool.query("select * from meilleur_chef")
+          .then((meilleur_chef_)=>{
+            console.log(meilleur_chef_);
+            pool.query("select * from meilleur_membre")
+            .then((meilleur_membre_)=>{
+              console.log(meilleur_membre_);
+              pool.query("select * from recette_mois")
+              .then((recette_mois_)=>{
+                console.log(recette_mois_);
+                pool.query("select * from top5_commentaire")
+                .then((top5_commentaire_)=>{
+                  console.log(top5_commentaire_);
+                  pool.query("select * from compo_comptes")
+                  .then((compo_comptes_)=>{
+                    console.log(compo_comptes_);
+                    pool.query("select * from type_comptes")
+                    .then((type_comptes_)=>{
+                      pool.query("select * from top5_recettes")
+                      .then((top5_recettes_)=>{
+                        console.log(top5_recettes_);
+                        res.render('stats.html', { title: 'Statistiques', user: req.user,
+                        recette_activites: recette_activites_,
+                        provenance_fonds: provenance_fonds_,
+                        repartition_gains: repartition_gains_,
+                        meilleur_chef: meilleur_chef_,
+                        meilleur_membre: meilleur_membre_,
+                        recette_mois: recette_mois_,
+                        top5_commentaire: top5_commentaire_,
+                        compo_comptes: compo_comptes_,
+                        type_comptes: type_comptes_,
+                        top5_recettes: top5_recettes_ });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.redirect("/");
+      //done(new Error(`User with the id ${id} does not exist`));
+    })
+    //res.render('moncompte.html', { title: 'Mon Compte', user: req.user });
+  });
+  }
+
+});
+
   app.post('/validerecette', isLoggedIn, function(req, res, next) {
     console.log("Valide une recette...");
-    if (req.user.status != 'Admin') {
+    if (req.user.status != 'Admin' && req.user.status != 'Responsable Recette') {
       res.send("Error: Not an admin.");
     } else {
       pool.query("UPDATE recette SET valide = TRUE WHERE id = $1", [req.body.id])
@@ -699,7 +768,7 @@ module.exports = function(app, passport, pool) {
 
   app.post('/validateatelier', isLoggedIn, function(req, res, next) {
     console.log("Valide un Atelier...");
-    if (req.user.status != 'Admin') {
+    if (req.user.status != 'Admin' && req.user.status != 'Responsable Atelier') {
       res.send("Error: Not an admin.");
     } else {
       pool.query("UPDATE atelier SET valide = TRUE WHERE id = $1", [req.body.id])
@@ -716,7 +785,7 @@ module.exports = function(app, passport, pool) {
 
   app.post('/invaliderecette', isLoggedIn, function(req, res, next) {
     console.log("Invalide une recette...");
-    if (req.user.status != 'Admin') {
+    if (req.user.status != 'Admin' && req.user.status != 'Responsable Recette') {
       res.send("Error: Not an admin.");
     } else {
       pool.query("UPDATE recette SET valide = FALSE WHERE id = $1", [req.body.id])
@@ -733,7 +802,7 @@ module.exports = function(app, passport, pool) {
 
   app.post('/invalideatelier', isLoggedIn, function(req, res, next) {
     console.log("Invalide un atelier...");
-    if (req.user.status != 'Admin') {
+    if (req.user.status != 'Admin' && req.user.status != 'Responsable Atelier') {
       res.send("Error: Not an admin.");
     } else {
       pool.query("UPDATE atelier SET valide = FALSE WHERE id = $1", [req.body.id])
